@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartFlow — Demo IA Vigilancia</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root { --navy:#10304a; --green:#97c93e; --accent:#1a4d75; --light:#f8fafc; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--light);color:#0f172a;overflow-x:hidden;}
+.glass{background:rgba(255,255,255,0.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(16,48,74,0.08);}
+header{position:sticky;top:0;z-index:50;}
+nav{max-width:1100px;margin:0 auto;padding:0 24px;height:72px;display:flex;justify-content:space-between;align-items:center;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:36px;height:36px;}
+.logo-name{font-size:20px;font-weight:800;color:var(--navy);}
+.logo-name span{color:var(--green);}
+.demo-badge{font-size:11px;font-weight:700;padding:4px 14px;border:1px solid rgba(151,201,62,0.4);border-radius:20px;color:var(--green);background:rgba(151,201,62,0.08);letter-spacing:.05em;}
+.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--accent) 100%);color:white;padding:60px 24px 48px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(151,201,62,0.15),transparent 70%);top:-150px;right:-100px;border-radius:50%;}
+.hero h1{font-size:clamp(26px,4vw,40px);font-weight:800;line-height:1.15;margin-bottom:12px;}
+.hero h1 em{font-style:normal;color:var(--green);}
+.hero p{color:#cbd5e1;font-size:15px;max-width:520px;margin:0 auto 28px;line-height:1.7;}
+.clients{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
+.cpill{font-size:11px;padding:4px 14px;border-radius:20px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px;}
+.tabs{display:flex;gap:4px;background:white;border:1px solid #e2e8f0;border-radius:14px;padding:5px;margin:32px auto;max-width:500px;}
+.tab{flex:1;padding:10px 16px;border-radius:10px;border:none;background:transparent;color:#64748b;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;}
+.tab.active{background:var(--navy);color:white;}
+.tc{display:none;} .tc.active{display:block;}
+.card{background:white;border-radius:20px;border:1px solid #e2e8f0;padding:28px;margin-bottom:20px;box-shadow:0 2px 12px rgba(16,48,74,0.06);}
+.card-hdr{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;}
+.card-title{font-size:15px;font-weight:800;color:var(--navy);}
+/* Filtros */
+.filter-bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:center;}
+.fsel{padding:9px 14px;border:1px solid #e2e8f0;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:#0f172a;background:white;cursor:pointer;outline:none;}
+.btn-calc{background:linear-gradient(135deg,var(--navy),var(--accent));color:white;padding:9px 22px;border-radius:10px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.btn-calc:hover{opacity:.9;transform:translateY(-1px);}
+.btn-calc:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+/* Metrics */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px;}
+.mc{background:var(--light);border:1px solid #e2e8f0;border-radius:14px;padding:16px;text-align:center;}
+.mc-label{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+.mc-val{font-size:24px;font-weight:800;}
+.mc-val.navy{color:var(--navy);}
+.mc-val.green{color:var(--green);}
+.mc-val.warn{color:#f59e0b;}
+.mc-val.purple{color:#7c3aed;}
+.mc-val.red{color:#ef4444;}
+/* Tabla */
+.tbl-wrap{overflow-x:auto;border-radius:14px;border:1px solid #e2e8f0;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead tr{background:var(--navy);color:white;}
+th{padding:12px 14px;text-align:left;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
+td{padding:11px 14px;border-bottom:1px solid #f1f5f9;color:#374151;white-space:nowrap;}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#f8fafc;}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;}
+.b-green{background:rgba(151,201,62,0.15);color:#3d6b0d;}
+.b-warn{background:rgba(245,158,11,0.15);color:#92400e;}
+.b-red{background:rgba(239,68,68,0.15);color:#991b1b;}
+.b-blue{background:rgba(16,48,74,0.1);color:var(--navy);}
+/* Resumen liquidación */
+.liq-header{background:linear-gradient(135deg,var(--navy),var(--accent));color:white;border-radius:16px;padding:24px;margin-bottom:20px;}
+.liq-emp{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
+.liq-avatar{width:52px;height:52px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--navy);flex-shrink:0;}
+.liq-name{font-size:20px;font-weight:800;}
+.liq-sub{font-size:12px;color:rgba(255,255,255,0.7);}
+.liq-totals{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.lt-box{background:rgba(255,255,255,0.1);border-radius:12px;padding:14px;text-align:center;}
+.lt-label{font-size:10px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.lt-val{font-size:22px;font-weight:800;color:var(--green);}
+/* Semanas */
+.week-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px;}
+.wk{background:var(--light);border:1px solid #e2e8f0;border-radius:14px;padding:16px;}
+.wk-title{font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.wk-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;}
+.wk-row span:first-child{color:#64748b;}
+.wk-row span:last-child{font-weight:700;color:#0f172a;}
+.wk-extra{color:#f59e0b !important;}
+/* Loading */
+.loading{display:none;align-items:center;gap:10px;color:var(--navy);font-size:13px;font-weight:600;margin-bottom:16px;}
+.loading.show{display:flex;}
+.pulse{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.placeholder{text-align:center;padding:48px;color:#94a3b8;font-size:14px;}
+/* Registro tab */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr;}}
+.fg{display:flex;flex-direction:column;gap:6px;}
+.fg.full{grid-column:1/-1;}
+label{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;}
+input,select{padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:#0f172a;outline:none;transition:border .2s;}
+input:focus,select:focus{border-color:var(--green);}
+.emp-preview{background:rgba(151,201,62,0.08);border:1px solid rgba(151,201,62,0.25);border-radius:12px;padding:14px;margin-top:8px;display:none;align-items:center;gap:14px;}
+.emp-preview.show{display:flex;}
+.ep-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--accent));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:white;flex-shrink:0;}
+.ep-name{font-size:14px;font-weight:700;color:var(--navy);}
+.ep-sub{font-size:12px;color:#64748b;}
+.btn-submit{background:linear-gradient(135deg,var(--navy),var(--accent));color:white;width:100%;padding:13px;border-radius:12px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;transition:all .2s;}
+.btn-submit:hover{opacity:.9;transform:translateY(-1px);}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.msg{padding:12px 16px;border-radius:10px;font-size:13px;margin-top:12px;display:none;}
+.msg.ok{background:rgba(151,201,62,0.1);border:1px solid rgba(151,201,62,0.3);color:#3d6b0d;display:block;}
+.msg.err{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#991b1b;display:block;}
+/* Registros recientes */
+.reg-grid{display:grid;grid-template-columns:2fr 1fr 1.2fr 0.8fr;gap:8px;}
+.rg-hdr{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;padding-bottom:10px;border-bottom:1px solid #e2e8f0;margin-bottom:8px;}
+.rg-row{font-size:12px;padding:8px 0;border-bottom:1px solid #f1f5f9;color:#374151;}
+.rg-row span:last-child{font-weight:700;}
+/* Empresa chart */
+.empresa-bar{height:8px;border-radius:4px;background:#e2e8f0;margin-top:4px;overflow:hidden;}
+.empresa-fill{height:100%;border-radius:4px;background:var(--green);transition:width 1.5s cubic-bezier(.22,1,.36,1);}
+/* Export btn */
+.btn-export{background:white;border:1.5px solid var(--navy);color:var(--navy);padding:8px 18px;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.btn-export:hover{background:var(--navy);color:white;}
+footer{margin-top:48px;padding:24px;border-top:1px solid #e2e8f0;text-align:center;font-size:12px;color:#94a3b8;}
+</style>
+</head>
+<body>
+<header class="glass">
+<nav>
+  <div class="logo">
+    <svg viewBox="0 0 100 100" class="logo-icon"><path d="M50 5 L85 25 L85 65 L50 85 L15 65 L15 25 Z" fill="none" stroke="#10304a" stroke-width="8"/><path d="M40 15 L75 35 L75 60 L40 80 L5 60 L5 35 Z" fill="none" stroke="#97c93e" stroke-width="8" opacity=".8"/></svg>
+    <div class="logo-name">Smart<span>Flow</span></div>
+  </div>
+  <div class="demo-badge">DEMO INTERACTIVO</div>
+</nav>
+</header>
+
+<div class="hero">
+  <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(151,201,62,0.12);border:1px solid rgba(151,201,62,0.3);border-radius:999px;padding:4px 14px;margin-bottom:20px;">
+    <span style="width:6px;height:6px;background:var(--green);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;"></span>
+    <span style="color:var(--green);font-size:11px;font-weight:800;letter-spacing:.12em;">IA EN VIVO · Omnitempus S.A.S</span>
+  </div>
+  <h1>Gestión inteligente de<br><em>seguridad privada</em></h1>
+  <p>Registro de turnos en tiempo real y liquidación automática de nómina según normatividad colombiana CST 2026.</p>
+  <div class="clients">
+    <span class="cpill">Embajada de Winterfell</span>
+    <span class="cpill">Acme Corp</span>
+    <span class="cpill">Cyberdyne Systems</span>
+    <span class="cpill">Industrias Stark</span>
+  </div>
+</div>
+
+<div class="wrap">
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('registro',this)">Registro de turno</button>
+  <button class="tab" onclick="switchTab('liquidacion',this)">Liquidación IA</button>
+</div>
+
+<!-- TAB REGISTRO -->
+<div id="tab-registro" class="tc active">
+  <div class="card">
+    <div class="card-hdr"><span class="dot"></span><span class="card-title">Registro de turno — Vigilantes</span></div>
+    <div class="form-grid">
+      <div class="fg full">
+        <label>Número de cédula</label>
+        <input type="number" id="ced" placeholder="Ej: 1020304050" oninput="buscar(this.value)">
+        <div class="emp-preview" id="ep">
+          <div class="ep-av" id="ep-av">AT</div>
+          <div><div class="ep-name" id="ep-nm">—</div><div class="ep-sub" id="ep-sb">—</div></div>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Fecha del turno</label>
+        <input type="date" id="fecha">
+      </div>
+      <div class="fg">
+        <label>ID Puesto</label>
+        <input type="text" id="puesto" readonly placeholder="Auto">
+      </div>
+      <div class="fg">
+        <label>Hora inicio</label>
+        <input type="time" id="hinicio">
+      </div>
+      <div class="fg">
+        <label>Hora fin</label>
+        <input type="time" id="hfin">
+      </div>
+    </div>
+    <button class="btn-submit" id="btn-reg" onclick="registrar()" disabled>Registrar turno</button>
+    <div class="msg" id="reg-msg"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-hdr"><span class="dot"></span><span class="card-title">Últimos turnos registrados</span></div>
+    <div class="reg-grid rg-hdr">
+      <span>Empleado</span><span>Fecha</span><span>Turno</span><span>Horas</span>
+    </div>
+    <div id="regs">
+      <div class="reg-grid rg-row"><span>Alejandro Torres</span><span>02/03/26</span><span>06:00–14:00</span><span style="color:var(--green)">8h ord.</span></div>
+      <div class="reg-grid rg-row"><span>Sofía Villamil</span><span>02/03/26</span><span>14:00–22:00</span><span style="color:var(--green)">8h ord.</span></div>
+      <div class="reg-grid rg-row"><span>Mateo Holguín</span><span>02/03/26</span><span>22:00–06:00</span><span style="color:#7c3aed">8h noc.</span></div>
+      <div class="reg-grid rg-row"><span>Joaquín Lozano</span><span>09/03/26</span><span>07:00–03:00</span><span style="color:#f59e0b">20h ext.</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB LIQUIDACION -->
+<div id="tab-liquidacion" class="tc">
+  <div class="card">
+    <div class="card-hdr"><span class="dot"></span><span class="card-title">Liquidación automática con IA · Normatividad CST Colombia</span>
+      <div style="margin-left:auto;display:flex;gap:8px;">
+        <button class="btn-export" onclick="exportarPDF()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Exportar PDF
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <select class="fsel" id="sel-emp">
+        <option value="">Seleccionar empleado...</option>
+        <option value="1020304050">Alejandro Torres — Vigilante</option>
+        <option value="1032456789">Sofía Villamil — Vigilante</option>
+        <option value="1018273645">Mateo Holguín — Vigilante</option>
+        <option value="1025364758">Isabella Ríos — Recepcionista</option>
+        <option value="1039404142">Joaquín Lozano — Escolta</option>
+        <option value="1070809010">Sebastián Castro — Vigilante</option>
+      </select>
+      <select class="fsel" id="sel-mes"><option value="marzo2026">Marzo 2026</option></select>
+      <select class="fsel" id="sel-smmlv"><option value="1423500">SMMLV 2026: $1.423.500</option></select>
+      <button class="btn-calc" id="btn-liq" onclick="liquidar()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        Calcular con IA
+      </button>
+    </div>
+
+    <div class="loading" id="loading"><div class="pulse"></div><span>SmartFlow IA calculando liquidación según CST Colombia...</span></div>
+
+    <div id="liq-result">
+      <div class="placeholder">Selecciona un empleado y haz clic en "Calcular con IA"</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<footer>
+  <strong style="color:var(--navy)">SmartFlow</strong> — IA y analítica para el crecimiento de PYMES &nbsp;·&nbsp; Demo con datos ficticios · Omnitempus S.A.S
+</footer>
+
+<script>
+const EMP={
+  1020304050:{n:'Alejandro Torres',c:'Vigilante',p:'101VEW',cl:'Embajada de Winterfell',lu:'Portería principal',sal:1423500},
+  1032456789:{n:'Sofía Villamil',c:'Vigilante',p:'101VEW',cl:'Embajada de Winterfell',lu:'Portería principal',sal:1423500},
+  1018273645:{n:'Mateo Holguín',c:'Vigilante',p:'101VEW',cl:'Embajada de Winterfell',lu:'Portería principal',sal:1423500},
+  1025364758:{n:'Isabella Ríos',c:'Recepcionista',p:'102REW',cl:'Embajada de Winterfell',lu:'Recepción piso 2',sal:1600000},
+  1039404142:{n:'Joaquín Lozano',c:'Escolta',p:'104EAC',cl:'Acme Corp',lu:'Presidencia',sal:1800000},
+  1070809010:{n:'Sebastián Castro',c:'Vigilante',p:'101VAC',cl:'Acme Corp',lu:'Parqueaderos',sal:1423500}
+};
+
+const TURNOS={
+  1020304050:[['2026-03-02','06:00','14:00'],['2026-03-03','06:00','14:00'],['2026-03-04','06:00','14:00'],['2026-03-05','06:00','14:00'],['2026-03-06','06:00','18:00'],['2026-03-08','06:00','18:00'],['2026-03-09','06:00','14:00'],['2026-03-10','06:00','14:00'],['2026-03-11','06:00','14:00'],['2026-03-12','06:00','14:00'],['2026-03-13','06:00','18:00'],['2026-03-15','06:00','18:00'],['2026-03-16','06:00','14:00'],['2026-03-17','06:00','14:00'],['2026-03-18','06:00','14:00'],['2026-03-19','06:00','14:00'],['2026-03-20','06:00','18:00'],['2026-03-22','06:00','18:00'],['2026-03-23','06:00','14:00'],['2026-03-24','06:00','14:00'],['2026-03-25','06:00','18:00'],['2026-03-26','06:00','14:00'],['2026-03-27','06:00','18:00'],['2026-03-29','06:00','18:00'],['2026-03-30','06:00','14:00'],['2026-03-31','06:00','14:00']],
+  1032456789:[['2026-03-02','14:00','22:00'],['2026-03-03','14:00','22:00'],['2026-03-04','14:00','22:00'],['2026-03-05','14:00','22:00'],['2026-03-06','18:00','06:00'],['2026-03-07','06:00','18:00'],['2026-03-09','14:00','22:00'],['2026-03-10','14:00','22:00'],['2026-03-11','14:00','22:00'],['2026-03-12','14:00','22:00'],['2026-03-13','18:00','06:00'],['2026-03-14','06:00','18:00'],['2026-03-16','14:00','22:00'],['2026-03-17','14:00','22:00'],['2026-03-18','14:00','22:00'],['2026-03-19','14:00','22:00'],['2026-03-20','18:00','06:00'],['2026-03-21','06:00','18:00'],['2026-03-23','14:00','22:00'],['2026-03-24','14:00','22:00'],['2026-03-25','18:00','06:00'],['2026-03-26','14:00','22:00'],['2026-03-27','18:00','06:00'],['2026-03-28','06:00','18:00'],['2026-03-30','14:00','22:00'],['2026-03-31','14:00','22:00']],
+  1039404142:[['2026-03-02','07:00','19:00'],['2026-03-03','07:00','19:00'],['2026-03-04','07:00','19:00'],['2026-03-05','05:30','14:00'],['2026-03-06','07:00','18:00'],['2026-03-07','07:00','16:00'],['2026-03-09','07:00','03:00'],['2026-03-11','07:00','19:00'],['2026-03-12','07:00','18:00'],['2026-03-13','07:00','18:00'],['2026-03-14','07:00','18:00'],['2026-03-16','07:00','19:00'],['2026-03-17','06:00','19:00'],['2026-03-18','05:00','14:00'],['2026-03-19','07:00','19:00'],['2026-03-20','07:00','21:00'],['2026-03-22','07:00','18:00'],['2026-03-23','07:00','18:00'],['2026-03-24','07:00','19:00'],['2026-03-25','07:00','19:00'],['2026-03-26','07:00','21:00'],['2026-03-27','07:00','01:00'],['2026-03-30','04:00','12:00'],['2026-03-31','05:30','16:00']]
+};
+
+// Helper: horas entre dos tiempos considerando cruce de medianoche
+function horasEntre(ini,fin){
+  const [h1,m1]=ini.split(':').map(Number);
+  const [h2,m2]=fin.split(':').map(Number);
+  let mins=(h2*60+m2)-(h1*60+m1);
+  if(mins<0)mins+=1440;
+  return mins/60;
+}
+
+function esDomingo(fecha){
+  return new Date(fecha+'T12:00:00').getDay()===0;
+}
+
+function esFestivo(fecha){
+  const F=['2026-01-01','2026-01-12','2026-03-23','2026-03-24','2026-04-02','2026-04-03','2026-05-01','2026-06-15','2026-06-22','2026-06-29','2026-07-20','2026-08-07','2026-08-17','2026-10-12','2026-11-02','2026-11-16','2026-12-08','2026-12-25'];
+  return F.includes(fecha);
+}
+
+// Calcular horas por tipo para un turno
+function clasificarHoras(fecha,ini,fin){
+  const [h1,m1]=ini.split(':').map(Number);
+  const [h2,m2]=fin.split(':').map(Number);
+  let t1=h1*60+m1, t2=h2*60+m2;
+  if(t2<=t1)t2+=1440;
+  const dom=esDomingo(fecha)||esFestivo(fecha);
+  let odD=0,odN=0,ddD=0,ddN=0;
+  for(let t=t1;t<t2;t++){
+    const hr=Math.floor((t%1440)/60);
+    const noc=hr<6||hr>=19;
+    if(dom){if(noc)ddN+=1;else ddD+=1;}
+    else{if(noc)odN+=1;else odD+=1;}
+  }
+  return{odD:odD/60,odN:odN/60,ddD:ddD/60,ddN:ddN/60,total:(t2-t1)/60};
+}
+
+function calcularLiquidacion(cedula){
+  const emp=EMP[cedula];
+  const turnos=TURNOS[cedula]||[];
+  const SMMLV=1423500;
+  const valorHora=emp.sal/240;
+
+  // Semanas ISO
+  function getSemana(fecha){
+    const d=new Date(fecha+'T12:00:00');
+    const day=d.getDay()||7;
+    d.setDate(d.getDate()+4-day);
+    const y=new Date(d.getFullYear(),0,1);
+    return Math.ceil((((d-y)/86400000)+1)/7);
+  }
+
+  let semanas={};
+  turnos.forEach(([f,ini,fin])=>{
+    if(!ini||!fin)return;
+    const sw=getSemana(f);
+    if(!semanas[sw])semanas[sw]={h:0,turnos:[],sem:sw};
+    const hrs=horasEntre(ini,fin);
+    semanas[sw].h+=hrs;
+    semanas[sw].turnos.push({f,ini,fin,hrs});
+  });
+
+  // Totales generales
+  let totOdD=0,totOdN=0,totDdD=0,totDdN=0,totEdD=0,totEdN=0,totEdDdom=0,totEdNdom=0;
+  let totalHoras=0,horasOrdinarias=0,horasExtras=0;
+
+  Object.values(semanas).forEach(sw=>{
+    const MAX=42;
+    let semH=sw.h;
+    let extras=Math.max(0,semH-MAX);
+    let ord=Math.min(semH,MAX);
+    horasOrdinarias+=ord;
+    horasExtras+=extras;
+    totalHoras+=semH;
+
+    // Clasificar horas de esta semana
+    sw.turnos.forEach(({f,ini,fin,hrs})=>{
+      const cl=clasificarHoras(f,ini,fin);
+      // Proporción de extras en este turno
+      const pExtra=extras>0?Math.min(hrs,extras)/hrs:0;
+      const pOrd=1-pExtra;
+      extras=Math.max(0,extras-hrs);
+
+      if(pOrd>0){
+        totOdD+=cl.odD*pOrd;
+        totOdN+=cl.odN*pOrd;
+        totDdD+=cl.ddD*pOrd;
+        totDdN+=cl.ddN*pOrd;
+      }
+      if(pExtra>0){
+        totEdD+=cl.odD*pExtra;
+        totEdN+=cl.odN*pExtra;
+        totEdDdom+=cl.ddD*pExtra;
+        totEdNdom+=cl.ddN*pExtra;
+      }
+    });
+  });
+
+  // Valores monetarios
+  const vOdD=totOdD*valorHora;
+  const vOdN=totOdN*valorHora*1.35;
+  const vDdD=totDdD*valorHora*1.75;
+  const vDdN=totDdN*valorHora*2.10;
+  const vEdD=totEdD*valorHora*1.25;
+  const vEdN=totEdN*valorHora*1.75;
+  const vEdDdom=totEdDdom*valorHora*2.05;
+  const vEdNdom=totEdNdom*valorHora*2.55;
+
+  const totalDevengado=emp.sal+vOdN+vDdD+vDdN+vEdD+vEdN+vEdDdom+vEdNdom;
+  const salud=totalDevengado*0.04;
+  const pension=totalDevengado*0.04;
+  const totalDeducciones=salud+pension;
+  const netoPagar=totalDevengado-totalDeducciones;
+
+  return{emp,turnos:turnos.length,totalHoras,horasOrdinarias,horasExtras,totOdD,totOdN,totDdD,totDdN,totEdD,totEdN,totEdDdom,totEdNdom,vOdD,vOdN,vDdD,vDdN,vEdD,vEdN,vEdDdom,vEdNdom,totalDevengado,salud,pension,totalDeducciones,netoPagar,valorHora,semanas};
+}
+
+function fmt(n){return '$'+Math.round(n).toLocaleString('es-CO');}
+function fh(n){return n.toFixed(1)+'h';}
+function pc(n,t){return t>0?((n/t)*100).toFixed(0)+'%':'0%';}
+
+function renderLiq(cedula){
+  const r=calcularLiquidacion(cedula);
+  const ini=r.emp.n.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+
+  const semsHTML=Object.values(r.semanas).sort((a,b)=>a.sem-b.sem).map(sw=>{
+    const ex=Math.max(0,sw.h-42);
+    return`<div class="wk">
+      <div class="wk-title">Semana ${sw.sem}</div>
+      <div class="wk-row"><span>Horas trabajadas</span><span>${fh(sw.h)}</span></div>
+      <div class="wk-row"><span>Horas ordinarias</span><span>${fh(Math.min(sw.h,42))}</span></div>
+      <div class="wk-row"><span>Horas extras</span><span class="${ex>0?'wk-extra':''}">${fh(ex)}</span></div>
+      <div class="wk-row"><span>Turnos</span><span>${sw.turnos.length}</span></div>
+    </div>`;
+  }).join('');
+
+  return`
+<div class="liq-header">
+  <div class="liq-emp">
+    <div class="liq-avatar">${ini}</div>
+    <div>
+      <div class="liq-name">${r.emp.n}</div>
+      <div class="liq-sub">${r.emp.c} · ${r.emp.lu} · ${r.emp.cl}</div>
+      <div class="liq-sub">Cédula: ${cedula} · Período: Marzo 2026</div>
+    </div>
+  </div>
+  <div class="liq-totals">
+    <div class="lt-box"><div class="lt-label">Total devengado</div><div class="lt-val">${fmt(r.totalDevengado)}</div></div>
+    <div class="lt-box"><div class="lt-label">Deducciones</div><div class="lt-val" style="color:#f87171;">${fmt(r.totalDeducciones)}</div></div>
+    <div class="lt-box"><div class="lt-label">Neto a pagar</div><div class="lt-val" style="color:white;font-size:26px;">${fmt(r.netoPagar)}</div></div>
+  </div>
+</div>
+
+<div class="metrics">
+  <div class="mc"><div class="mc-label">Horas totales</div><div class="mc-val navy">${fh(r.totalHoras)}</div></div>
+  <div class="mc"><div class="mc-label">Horas ordinarias</div><div class="mc-val green">${fh(r.horasOrdinarias)}</div></div>
+  <div class="mc"><div class="mc-label">Horas extras</div><div class="mc-val warn">${fh(r.horasExtras)}</div></div>
+  <div class="mc"><div class="mc-label">Turnos trabajados</div><div class="mc-val" style="color:var(--accent)">${r.turnos}</div></div>
+  <div class="mc"><div class="mc-label">Salario base</div><div class="mc-val navy" style="font-size:16px;">${fmt(r.emp.sal)}</div></div>
+</div>
+
+<h3 style="font-size:13px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.06em;margin:20px 0 12px;">Detalle por semana</h3>
+<div class="week-grid">${semsHTML}</div>
+
+<h3 style="font-size:13px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.06em;margin:20px 0 12px;">Tabla de liquidación — Clasificación de horas</h3>
+<div class="tbl-wrap">
+<table>
+<thead><tr>
+  <th>Tipo de hora</th><th>Horas</th><th>% del total</th><th>Factor</th><th>Valor hora</th><th>Total</th>
+</tr></thead>
+<tbody>
+<tr><td>Ordinaria diurna</td><td>${fh(r.totOdD)}</td><td>${pc(r.totOdD,r.totalHoras)}</td><td>1.00</td><td>${fmt(r.valorHora)}</td><td>${fmt(r.vOdD)}</td></tr>
+<tr><td>Ordinaria nocturna <span class="badge b-blue">recargo 35%</span></td><td>${fh(r.totOdN)}</td><td>${pc(r.totOdN,r.totalHoras)}</td><td>1.35</td><td>${fmt(r.valorHora*1.35)}</td><td>${fmt(r.vOdN)}</td></tr>
+<tr><td>Ordinaria dominical/festiva diurna <span class="badge b-warn">dom.</span></td><td>${fh(r.totDdD)}</td><td>${pc(r.totDdD,r.totalHoras)}</td><td>1.75</td><td>${fmt(r.valorHora*1.75)}</td><td>${fmt(r.vDdD)}</td></tr>
+<tr><td>Ordinaria dominical/festiva nocturna</td><td>${fh(r.totDdN)}</td><td>${pc(r.totDdN,r.totalHoras)}</td><td>2.10</td><td>${fmt(r.valorHora*2.10)}</td><td>${fmt(r.vDdN)}</td></tr>
+<tr style="background:rgba(245,158,11,0.06)"><td><strong>Extra diurna</strong> <span class="badge b-warn">extra</span></td><td>${fh(r.totEdD)}</td><td>${pc(r.totEdD,r.totalHoras)}</td><td>1.25</td><td>${fmt(r.valorHora*1.25)}</td><td>${fmt(r.vEdD)}</td></tr>
+<tr style="background:rgba(245,158,11,0.06)"><td><strong>Extra nocturna</strong> <span class="badge b-warn">extra</span></td><td>${fh(r.totEdN)}</td><td>${pc(r.totEdN,r.totalHoras)}</td><td>1.75</td><td>${fmt(r.valorHora*1.75)}</td><td>${fmt(r.vEdN)}</td></tr>
+<tr style="background:rgba(245,158,11,0.06)"><td><strong>Extra dominical diurna</strong></td><td>${fh(r.totEdDdom)}</td><td>${pc(r.totEdDdom,r.totalHoras)}</td><td>2.05</td><td>${fmt(r.valorHora*2.05)}</td><td>${fmt(r.vEdDdom)}</td></tr>
+<tr style="background:rgba(245,158,11,0.06)"><td><strong>Extra dominical nocturna</strong></td><td>${fh(r.totEdNdom)}</td><td>${pc(r.totEdNdom,r.totalHoras)}</td><td>2.55</td><td>${fmt(r.valorHora*2.55)}</td><td>${fmt(r.vEdNdom)}</td></tr>
+</tbody>
+<tfoot>
+<tr style="background:rgba(16,48,74,0.06);">
+  <td colspan="5" style="font-weight:800;color:var(--navy);font-size:13px;">TOTAL HORAS EXTRAS (sobre salario base)</td>
+  <td style="font-weight:800;color:var(--navy);">${fmt(r.vOdN+r.vDdD+r.vDdN+r.vEdD+r.vEdN+r.vEdDdom+r.vEdNdom)}</td>
+</tr>
+</tfoot>
+</table>
+</div>
+
+<h3 style="font-size:13px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.06em;margin:20px 0 12px;">Resumen de nómina</h3>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Concepto</th><th>Tipo</th><th>Valor</th></tr></thead>
+<tbody>
+<tr><td>Salario base</td><td><span class="badge b-blue">Devengo</span></td><td style="font-weight:700;">${fmt(r.emp.sal)}</td></tr>
+<tr><td>Recargos y horas extras</td><td><span class="badge b-green">Devengo</span></td><td style="font-weight:700;color:var(--green);">${fmt(r.totalDevengado-r.emp.sal)}</td></tr>
+<tr><td><strong>Total devengado</strong></td><td><span class="badge b-blue">Devengo</span></td><td style="font-weight:800;color:var(--navy);">${fmt(r.totalDevengado)}</td></tr>
+<tr><td>Salud empleado (4%)</td><td><span class="badge b-red">Deducción</span></td><td style="color:#ef4444;">–${fmt(r.salud)}</td></tr>
+<tr><td>Pensión empleado (4%)</td><td><span class="badge b-red">Deducción</span></td><td style="color:#ef4444;">–${fmt(r.pension)}</td></tr>
+<tr><td><strong>Total deducciones</strong></td><td><span class="badge b-red">Deducción</span></td><td style="font-weight:800;color:#ef4444;">–${fmt(r.totalDeducciones)}</td></tr>
+</tbody>
+<tfoot>
+<tr style="background:var(--navy);"><td colspan="2" style="font-weight:800;color:white;font-size:14px;">NETO A PAGAR</td><td style="font-weight:900;color:var(--green);font-size:18px;">${fmt(r.netoPagar)}</td></tr>
+</tfoot>
+</table>
+</div>
+
+<div style="margin-top:16px;padding:14px;background:rgba(151,201,62,0.08);border:1px solid rgba(151,201,62,0.25);border-radius:12px;font-size:11px;color:#475569;">
+  <strong style="color:var(--navy);">Normatividad aplicada:</strong> Código Sustantivo del Trabajo · Art. 161 (jornada máx. 42h/semana) · Art. 168 (recargo nocturno 35%) · Art. 179 (dominical/festivo 75%) · Art. 180 (extra diurna 25% · nocturna 75%) · SMMLV 2026: $1.423.500
+</div>`;
+}
+
+async function liquidar(){
+  const cedula=parseInt(document.getElementById('sel-emp').value);
+  if(!cedula){alert('Selecciona un empleado');return;}
+  document.getElementById('loading').classList.add('show');
+  document.getElementById('btn-liq').disabled=true;
+  document.getElementById('liq-result').innerHTML='';
+
+  // Usamos nuestro propio cálculo + IA para enriquecer
+  const r=calcularLiquidacion(cedula);
+  const turnosTexto=TURNOS[cedula].map(t=>t[1]&&t[2]?`${t[0]} ${t[1]}-${t[2]}`:'').filter(Boolean).join(', ');
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{role:'user',content:`Eres experto en nómina colombiana. Para el empleado ${r.emp.n} (${r.emp.c}), con los siguientes resultados calculados:
+- Total horas: ${r.totalHoras.toFixed(1)}h
+- Horas ordinarias: ${r.horasOrdinarias.toFixed(1)}h
+- Horas extras: ${r.horasExtras.toFixed(1)}h
+- Horas nocturnas ordinarias: ${r.totOdN.toFixed(1)}h
+- Horas dominicales: ${(r.totDdD+r.totDdN).toFixed(1)}h
+- Total devengado: $${Math.round(r.totalDevengado).toLocaleString('es-CO')}
+- Neto a pagar: $${Math.round(r.netoPagar).toLocaleString('es-CO')}
+
+En máximo 4 líneas cortas, explica: 1) Semanas con mayor generación de extras, 2) Alertas de cumplimiento laboral, 3) Recomendación para gerencia. Sé directo y conciso.`}]
+      })
+    });
+    const data=await resp.json();
+    const aiText=data.content?.map(c=>c.text||'').join('')||'';
+
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('liq-result').innerHTML=renderLiq(cedula)+`
+    <div style="margin-top:16px;padding:16px;background:linear-gradient(135deg,rgba(16,48,74,0.05),rgba(26,77,117,0.08));border:1px solid rgba(16,48,74,0.15);border-radius:12px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <div style="width:20px;height:20px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg width="10" height="10" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+        <span style="font-size:11px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.06em;">Análisis IA SmartFlow</span>
+      </div>
+      <p style="font-size:13px;color:#374151;line-height:1.7;">${aiText}</p>
+    </div>`;
+  }catch(e){
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('liq-result').innerHTML=renderLiq(cedula);
+  }
+  document.getElementById('btn-liq').disabled=false;
+}
+
+function switchTab(id,btn){
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function buscar(val){
+  const id=parseInt(val);
+  const ep=document.getElementById('ep');
+  const btn=document.getElementById('btn-reg');
+  if(EMP[id]){
+    const e=EMP[id];
+    const ini=e.n.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('ep-av').textContent=ini;
+    document.getElementById('ep-nm').textContent=e.n;
+    document.getElementById('ep-sb').textContent=e.c+' · '+e.lu+' · '+e.cl;
+    document.getElementById('puesto').value=e.p;
+    ep.classList.add('show'); btn.disabled=false;
+  }else{ep.classList.remove('show');document.getElementById('puesto').value='';btn.disabled=true;}
+}
+
+function registrar(){
+  const ced=document.getElementById('ced').value;
+  const f=document.getElementById('fecha').value;
+  const hi=document.getElementById('hinicio').value;
+  const hf=document.getElementById('hfin').value;
+  const msg=document.getElementById('reg-msg');
+  if(!f||!hi||!hf){msg.className='msg err';msg.textContent='Completa todos los campos.';return;}
+  const e=EMP[parseInt(ced)];
+  const btn=document.getElementById('btn-reg');
+  btn.disabled=true;btn.textContent='Registrando...';
+  setTimeout(()=>{
+    msg.className='msg ok';
+    msg.textContent='✓ Turno registrado: '+e.n+' · '+f+' · '+hi+' – '+hf;
+    btn.disabled=false;btn.textContent='Registrar turno';
+    const hrs=horasEntre(hi,hf);
+    const row=document.createElement('div');
+    row.className='reg-grid rg-row';
+    row.style.animation='fadeIn .3s ease';
+    const tipo=hrs>8?'ext.':'ord.';
+    const col=hrs>8?'#f59e0b':hrs>=7?'var(--green)':'#7c3aed';
+    row.innerHTML=`<span>${e.n}</span><span>${f.slice(5).split('-').reverse().join('/')}</span><span>${hi}–${hf}</span><span style="color:${col};font-weight:700">${hrs.toFixed(1)}h ${tipo}</span>`;
+    document.getElementById('regs').prepend(row);
+  },700);
+}
+
+function exportarPDF(){
+  const cedula=parseInt(document.getElementById('sel-emp').value);
+  if(!cedula||!document.getElementById('liq-result').querySelector('.liq-header')){
+    alert('Primero calcula la liquidación de un empleado.');return;
+  }
+  window.print();
+}
+
+document.getElementById('fecha').value=new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
