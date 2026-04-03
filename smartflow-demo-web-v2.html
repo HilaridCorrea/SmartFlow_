@@ -152,7 +152,7 @@ footer{margin-top:40px;padding:20px;border-top:1px solid #e2e8f0;text-align:cent
     <div class="msg" id="msg-ent"></div>
     <div class="fg">
       <label>Número de cédula — el sistema valida automáticamente</label>
-      <input type="number" id="ced-ent" placeholder="Ej: 1031323334" oninput="buscarEmp(this.value,'ent')">
+      <div style="display:flex;gap:8px;"><input type="number" id="ced-ent" style="flex:1" placeholder="Ej: 1031323334" oninput="buscarEmp(this.value,ent)" onchange="buscarEmp(this.value,ent)" onpaste="setTimeout(()=>buscarEmp(this.value,ent),50)"><button type="button" onclick="buscarEmp(document.getElementById(ced-ent).value,ent)" style="padding:9px 16px;background:var(--navy);color:white;border:none;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">Buscar</button></div>
     </div>
     <div class="ep" id="ep-ent">
       <div class="ep-av" id="ep-av-ent">?</div>
@@ -194,7 +194,7 @@ footer{margin-top:40px;padding:20px;border-top:1px solid #e2e8f0;text-align:cent
     <div class="msg" id="msg-sal"></div>
     <div class="fg">
       <label>Número de cédula — busca tu entrada activa</label>
-      <input type="number" id="ced-sal" placeholder="Ej: 1031323334" oninput="buscarEntradaActiva(this.value)">
+      <div style="display:flex;gap:8px;"><input type="number" id="ced-sal" style="flex:1" placeholder="Ej: 1031323334" oninput="buscarEntradaActiva(this.value)" onchange="buscarEntradaActiva(this.value)" onpaste="setTimeout(()=>buscarEntradaActiva(this.value),50)"><button type="button" onclick="buscarEntradaActiva(document.getElementById(ced-sal).value)" style="padding:9px 16px;background:var(--navy);color:white;border:none;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">Buscar</button></div>
     </div>
     <div class="ep" id="ep-sal">
       <div class="ep-av" id="ep-av-sal">?</div>
