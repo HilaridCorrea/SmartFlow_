@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartFlow — Demo IA · Omnitempus S.A.S</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+:root{--navy:#10304a;--green:#97c93e;--accent:#1a4d75;--light:#f8fafc;--warn:#f59e0b;--red:#ef4444;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--light);color:#0f172a;}
+header{background:rgba(255,255,255,0.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(16,48,74,0.1);position:sticky;top:0;z-index:50;}
+nav{max-width:960px;margin:0 auto;padding:0 20px;height:60px;display:flex;justify-content:space-between;align-items:center;}
+.logo-name{font-size:18px;font-weight:800;color:var(--navy);}
+.logo-name span{color:var(--green);}
+.badge{font-size:10px;font-weight:800;padding:3px 12px;border:1px solid rgba(151,201,62,0.4);border-radius:20px;color:var(--green);background:rgba(151,201,62,0.08);}
+.hero{background:linear-gradient(135deg,var(--navy),var(--accent));color:white;padding:40px 20px 32px;text-align:center;}
+.hero h1{font-size:clamp(20px,3vw,32px);font-weight:800;margin-bottom:8px;}
+.hero h1 em{color:var(--green);font-style:normal;}
+.hero p{color:#cbd5e1;font-size:13px;max-width:440px;margin:0 auto 16px;line-height:1.6;}
+.pills{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;}
+.pill{font-size:10px;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px;}
+.tabs{display:flex;gap:3px;background:white;border:1px solid #e2e8f0;border-radius:12px;padding:4px;margin:20px auto;max-width:420px;}
+.tab-btn{flex:1;padding:9px;border-radius:9px;border:none;background:transparent;color:#64748b;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;}
+.tab-btn.on{background:var(--navy);color:white;}
+.tc{display:none;}
+.tc.on{display:block;}
+.card{background:white;border-radius:16px;border:1px solid #e2e8f0;padding:22px;margin-bottom:16px;box-shadow:0 1px 8px rgba(16,48,74,0.05);}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.ct{font-size:14px;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:8px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+.dot-red{background:var(--red);}
+.step-tag{font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;}
+.st-ent{background:rgba(151,201,62,0.1);color:#166534;border:1px solid rgba(151,201,62,0.3);}
+.st-sal{background:rgba(239,68,68,0.1);color:#991b1b;border:1px solid rgba(239,68,68,0.3);}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.fg-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:560px){.fg-2{grid-template-columns:1fr;}}
+.fg label{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;}
+.fi{padding:10px 13px;border:1.5px solid #e2e8f0;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:#0f172a;outline:none;transition:border .2s;background:white;width:100%;}
+.fi:focus{border-color:var(--green);}
+.fi[readonly]{background:#f1f5f9;color:#64748b;}
+.search-row{display:flex;gap:8px;}
+.search-row .fi{flex:1;}
+.btn-buscar{padding:10px 18px;background:var(--navy);color:white;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;}
+.btn-buscar:hover{background:var(--accent);}
+.emp-card{background:rgba(151,201,62,0.08);border:1px solid rgba(151,201,62,0.25);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:14px;display:none;}
+.emp-card.show{display:flex;}
+.emp-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--accent));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:white;flex-shrink:0;}
+.emp-n{font-size:13px;font-weight:700;color:var(--navy);}
+.emp-s{font-size:11px;color:#64748b;}
+.emp-ok{background:#dcfce7;color:#166534;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:auto;flex-shrink:0;}
+.emp-err{background:#fee2e2;color:#991b1b;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:auto;flex-shrink:0;}
+.alert{padding:10px 14px;border-radius:10px;font-size:12px;margin-bottom:12px;display:none;}
+.alert.ok{background:rgba(151,201,62,0.1);border:1px solid rgba(151,201,62,0.3);color:#166534;display:block;}
+.alert.err{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#991b1b;display:block;}
+.alert.warn{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#92400e;display:block;}
+.ent-activa{background:rgba(16,48,74,0.04);border:1px solid rgba(16,48,74,0.12);border-radius:10px;padding:12px;margin-bottom:14px;display:none;}
+.ent-activa.show{display:block;}
+.ea-label{font-size:10px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+.ea-row{display:flex;align-items:center;gap:8px;font-size:12px;color:#374151;}
+.ea-dot{width:8px;height:8px;border-radius:50%;background:var(--green);}
+.btn-row{display:flex;gap:8px;margin-top:4px;}
+.btn{padding:10px 20px;border-radius:10px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
+.btn-g{background:var(--green);color:var(--navy);}
+.btn-g:hover{opacity:.9;}
+.btn-g:disabled{opacity:.35;cursor:not-allowed;}
+.btn-n{background:var(--navy);color:white;}
+.btn-n:hover{background:var(--accent);}
+.btn-n:disabled{opacity:.35;cursor:not-allowed;}
+.btn-o{background:white;border:1.5px solid #e2e8f0;color:var(--navy);}
+.btn-o:hover{border-color:var(--navy);}
+.sep{border:none;border-top:1px solid #f1f5f9;margin:14px 0;}
+.hdr-row{display:grid;grid-template-columns:2fr 1fr 1.5fr .8fr .8fr;gap:6px;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;padding-bottom:8px;border-bottom:1px solid #e2e8f0;margin-bottom:6px;}
+.data-row{display:grid;grid-template-columns:2fr 1fr 1.5fr .8fr .8fr;gap:6px;padding:7px 0;border-bottom:1px solid #f8fafc;font-size:12px;color:#374151;align-items:center;}
+.bx{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;}
+.bx-g{background:rgba(151,201,62,0.15);color:#166534;}
+.bx-w{background:rgba(245,158,11,0.15);color:#92400e;}
+.bx-p{background:rgba(124,58,237,0.1);color:#6d28d9;}
+.bx-r{background:rgba(239,68,68,0.15);color:#991b1b;}
+.bx-b{background:rgba(16,48,74,0.1);color:var(--navy);}
+.fbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+.fsel{padding:8px 12px;border:1px solid #e2e8f0;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:#0f172a;background:white;cursor:pointer;outline:none;}
+.mtr{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px;}
+.mc{background:var(--light);border:1px solid #e2e8f0;border-radius:12px;padding:13px;text-align:center;}
+.mc-l{font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.mc-v{font-size:20px;font-weight:800;}
+.tw{overflow-x:auto;border-radius:12px;border:1px solid #e2e8f0;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead tr{background:var(--navy);}
+th{padding:9px 11px;text-align:left;font-weight:700;font-size:10px;color:white;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
+td{padding:8px 11px;border-bottom:1px solid #f1f5f9;color:#374151;white-space:nowrap;}
+tr:last-child td{border-bottom:none;}
+tfoot tr td{font-weight:800;background:var(--navy);color:white;font-size:12px;}
+tfoot .neto{color:var(--green);font-size:16px;}
+.lhdr{background:linear-gradient(135deg,var(--navy),var(--accent));color:white;border-radius:14px;padding:20px;margin-bottom:16px;}
+.ltots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+.lt{background:rgba(255,255,255,0.1);border-radius:9px;padding:10px;text-align:center;}
+.lt-l{font-size:9px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;}
+.lt-v{font-size:18px;font-weight:800;}
+.ld{display:none;align-items:center;gap:8px;color:var(--navy);font-size:13px;font-weight:600;margin-bottom:12px;padding:10px;background:rgba(16,48,74,0.04);border-radius:10px;}
+.ld.on{display:flex;}
+.sp{width:13px;height:13px;border:2px solid rgba(151,201,62,0.3);border-top-color:var(--green);border-radius:50%;animation:sp .7s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ai-box{margin-top:12px;padding:12px;background:rgba(16,48,74,0.04);border:1px solid rgba(16,48,74,0.1);border-radius:10px;}
+.ai-lbl{font-size:10px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+.norma{margin-top:10px;padding:9px;background:rgba(151,201,62,0.08);border:1px solid rgba(151,201,62,0.2);border-radius:9px;font-size:11px;color:#475569;}
+footer{margin-top:36px;padding:18px 20px;border-top:1px solid #e2e8f0;text-align:center;font-size:11px;color:#94a3b8;}
+</style>
+</head>
+<body>
+<header>
+<nav>
+  <div class="logo-name">Smart<span>Flow</span></div>
+  <div class="badge">DEMO INTERACTIVO · Omnitempus S.A.S</div>
+</nav>
+</header>
+
+<div class="hero">
+  <h1>Gestión inteligente de <em>seguridad privada</em></h1>
+  <p>Registro de turnos en dos pasos independientes y liquidación automática según normatividad colombiana CST 2026.</p>
+  <div class="pills">
+    <span class="pill">Embajada de Winterfell</span>
+    <span class="pill">Acme Corp</span>
+    <span class="pill">Cyberdyne Systems</span>
+    <span class="pill">Industrias Stark</span>
+  </div>
+</div>
+
+<div class="wrap">
+<div class="tabs">
+  <button class="tab-btn on" onclick="showTab('registro',this)">Registro de turno</button>
+  <button class="tab-btn" onclick="showTab('liquidacion',this)">Liquidación IA</button>
+</div>
+
+<!-- ═══ TAB REGISTRO ═══ -->
+<div id="tab-registro" class="tc on">
+
+  <!-- ENTRADA -->
+  <div class="card">
+    <div class="ch">
+      <div class="ct"><span class="dot"></span>Marcar entrada</div>
+      <span class="step-tag st-ent">ENTRADA</span>
+    </div>
+    <div class="alert" id="msg-ent"></div>
+    <div class="fg">
+      <label>Número de cédula</label>
+      <div class="search-row">
+        <input class="fi" type="number" id="ced-ent" placeholder="Ej: 1020304050">
+        <button class="btn-buscar" onclick="buscarEnt()">Buscar</button>
+      </div>
+    </div>
+    <div class="emp-card" id="ec-ent">
+      <div class="emp-av" id="ea-ent"></div>
+      <div>
+        <div class="emp-n" id="en-ent"></div>
+        <div class="emp-s" id="es-ent"></div>
+      </div>
+      <div class="emp-ok">Activo</div>
+    </div>
+    <div class="fg-2">
+      <div class="fg"><label>Fecha del turno</label><input class="fi" type="date" id="fecha-ent"></div>
+      <div class="fg"><label>ID Puesto (auto)</label><input class="fi" type="text" id="puesto-ent" readonly></div>
+    </div>
+    <div class="fg"><label>Hora de entrada</label><input class="fi" type="time" id="hora-ent"></div>
+    <div class="btn-row">
+      <button class="btn btn-g" id="btn-ent" onclick="marcarEntrada()" disabled>
+        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 16l-4-4m0 0l4-4m-4 4h14"/></svg>
+        Registrar entrada
+      </button>
+      <button class="btn btn-o" onclick="limpEnt()">Limpiar</button>
+    </div>
+  </div>
+
+  <!-- SEPARADOR VISUAL -->
+  <div style="text-align:center;padding:8px 0;color:#94a3b8;font-size:12px;font-weight:600;">
+    — El vigilante trabaja su turno —
+  </div>
+
+  <!-- SALIDA (formulario independiente) -->
+  <div class="card">
+    <div class="ch">
+      <div class="ct"><span class="dot dot-red"></span>Marcar salida</div>
+      <span class="step-tag st-sal">SALIDA</span>
+    </div>
+    <div class="alert" id="msg-sal"></div>
+    <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:10px 13px;margin-bottom:14px;font-size:12px;color:#92400e;">
+      ⚠️ Este formulario es independiente. El vigilante debe haber registrado su entrada previamente.
+    </div>
+    <div class="fg">
+      <label>Número de cédula</label>
+      <div class="search-row">
+        <input class="fi" type="number" id="ced-sal" placeholder="Ej: 1020304050">
+        <button class="btn-buscar" onclick="buscarSal()">Buscar</button>
+      </div>
+    </div>
+    <div class="emp-card" id="ec-sal">
+      <div class="emp-av" id="ea-sal"></div>
+      <div>
+        <div class="emp-n" id="en-sal"></div>
+        <div class="emp-s" id="es-sal"></div>
+      </div>
+    </div>
+    <div class="ent-activa" id="ent-activa-box">
+      <div class="ea-label">Entrada activa encontrada</div>
+      <div class="ea-row"><span class="ea-dot"></span><span id="ent-activa-txt"></span></div>
+    </div>
+    <div class="fg"><label>Hora de salida</label><input class="fi" type="time" id="hora-sal"></div>
+    <div class="fg">
+      <label>Observación (opcional)</label>
+      <textarea class="fi" id="obs-sal" rows="2" placeholder="Novedad del turno..."></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-n" id="btn-sal" onclick="marcarSalida()" disabled>
+        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7"/></svg>
+        Registrar salida
+      </button>
+      <button class="btn btn-o" onclick="limpSal()">Limpiar</button>
+    </div>
+  </div>
+
+  <!-- HISTÓRICO -->
+  <div class="card">
+    <div class="ch">
+      <div class="ct"><span class="dot"></span>Histórico de turnos</div>
+      <button class="btn btn-o" style="font-size:11px;padding:6px 12px;" onclick="descargarCSV()">
+        ↓ Descargar CSV
+      </button>
+    </div>
+    <div class="hdr-row"><span>Empleado</span><span>Fecha</span><span>Turno</span><span>Horas</span><span>Tipo</span></div>
+    <div id="hist">
+      <div class="data-row"><span style="font-weight:600">Alejandro Torres</span><span>02/03/26</span><span>06:00 → 14:00</span><span style="color:var(--green);font-weight:700">8.0h</span><span><span class="bx bx-g">Ordinaria</span></span></div>
+      <div class="data-row"><span style="font-weight:600">Sofía Villamil</span><span>02/03/26</span><span>14:00 → 22:00</span><span style="color:var(--green);font-weight:700">8.0h</span><span><span class="bx bx-g">Ordinaria</span></span></div>
+      <div class="data-row"><span style="font-weight:600">Mateo Holguín</span><span>02/03/26</span><span>22:00 → 06:00</span><span style="color:#7c3aed;font-weight:700">8.0h</span><span><span class="bx bx-p">Nocturna</span></span></div>
+      <div class="data-row"><span style="font-weight:600">Joaquín Lozano</span><span>09/03/26</span><span>07:00 → 03:00</span><span style="color:var(--warn);font-weight:700">20.0h</span><span><span class="bx bx-w">Extra</span></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB LIQUIDACION ═══ -->
+<div id="tab-liquidacion" class="tc">
+  <div class="card">
+    <div class="ch">
+      <div class="ct"><span class="dot"></span>Liquidación automática · IA SmartFlow · CST Colombia</div>
+      <button class="btn btn-o" style="font-size:11px;padding:6px 12px;" id="btn-pdf" onclick="descargarPDF()" disabled>↓ PDF</button>
+    </div>
+    <div class="fbar">
+      <select class="fsel" id="sel-emp">
+        <option value="">Seleccionar empleado...</option>
+        <option value="1020304050">1020304050 — Alejandro Torres</option>
+        <option value="1032456789">1032456789 — Sofía Villamil</option>
+        <option value="1018273645">1018273645 — Mateo Holguín</option>
+        <option value="1025364758">1025364758 — Isabella Ríos</option>
+        <option value="1039404142">1039404142 — Joaquín Lozano</option>
+        <option value="1070809010">1070809010 — Sebastián Castro</option>
+        <option value="1031323334">1031323334 — Camila Rojas</option>
+        <option value="1011121314">1011121314 — Valentina Mendoza</option>
+        <option value="1015161718">1015161718 — Nicolás Duarte</option>
+        <option value="1039404142">1039404142 — Joaquín Lozano</option>
+      </select>
+      <select class="fsel"><option>Marzo 2026</option></select>
+      <button class="btn btn-n" onclick="calcular()">
+        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        Calcular con IA
+      </button>
+    </div>
+    <div class="ld" id="ld"><div class="sp"></div>SmartFlow IA calculando liquidación según CST Colombia...</div>
+    <div id="liq-out"><div style="text-align:center;padding:36px;color:#94a3b8;font-size:13px;">Selecciona un empleado y haz clic en "Calcular con IA"</div></div>
+  </div>
+</div>
+
+</div><!-- wrap -->
+<footer><strong style="color:var(--navy)">SmartFlow</strong> — IA y analítica para PYMES · Demo con datos ficticios · Omnitempus S.A.S · CST Colombia 2026</footer>
+
+<script>
+// ═══ BASE DE DATOS ═══
+var DB = {
+  1020304050:{n:"Alejandro Torres",c:"Vigilante",p:"101VEW",lu:"Portería principal",cl:"Embajada de Winterfell",sal:1423500},
+  1032456789:{n:"Sofía Villamil",c:"Vigilante",p:"101VEW",lu:"Portería principal",cl:"Embajada de Winterfell",sal:1423500},
+  1018273645:{n:"Mateo Holguín",c:"Vigilante",p:"101VEW",lu:"Portería principal",cl:"Embajada de Winterfell",sal:1423500},
+  1025364758:{n:"Isabella Ríos",c:"Recepcionista",p:"102REW",lu:"Recepción piso 2",cl:"Embajada de Winterfell",sal:1600000},
+  1070809010:{n:"Sebastián Castro",c:"Vigilante",p:"101VAC",lu:"Parqueaderos",cl:"Acme Corp",sal:1423500},
+  1011121314:{n:"Valentina Mendoza",c:"Vigilante",p:"101VAC",lu:"Parqueaderos",cl:"Acme Corp",sal:1423500},
+  1015161718:{n:"Nicolás Duarte",c:"Vigilante",p:"101VAC",lu:"Parqueaderos",cl:"Acme Corp",sal:1423500},
+  1019202122:{n:"Samuel Pardo",c:"Operador de medios",p:"102OMAC",lu:"Consola",cl:"Acme Corp",sal:1500000},
+  1023242526:{n:"Daniel Ospina",c:"Operador de medios",p:"102OMAC",lu:"Consola",cl:"Acme Corp",sal:1500000},
+  1027282930:{n:"Mariana Silva",c:"Operador de medios",p:"102OMAC",lu:"Consola",cl:"Acme Corp",sal:1500000},
+  1031323334:{n:"Camila Rojas",c:"Vigilante",p:"103VAC",lu:"Oficinas 301",cl:"Acme Corp",sal:1423500},
+  1035363738:{n:"Lucía Méndez",c:"Vigilante",p:"103VAC",lu:"Oficinas 401",cl:"Acme Corp",sal:1423500},
+  1039404142:{n:"Joaquín Lozano",c:"Escolta",p:"104EAC",lu:"Presidencia",cl:"Acme Corp",sal:1800000},
+  1043444546:{n:"Victoria Arango",c:"Vigilante",p:"101VCS",lu:"Piso 14",cl:"Cyberdyne Systems",sal:1423500},
+  1047484950:{n:"Benjamín Cortés",c:"Vigilante",p:"101VCS",lu:"Piso 14",cl:"Cyberdyne Systems",sal:1423500},
+  1051525354:{n:"Gabriela Serna",c:"Vigilante",p:"101VCS",lu:"Piso 14",cl:"Cyberdyne Systems",sal:1423500},
+  1055565758:{n:"Emiliano Peña",c:"Vigilante",p:"102VCS",lu:"Piso 15",cl:"Cyberdyne Systems",sal:1423500},
+  1059606162:{n:"Martina Suárez",c:"Vigilante",p:"103VCS",lu:"Piso 16",cl:"Cyberdyne Systems",sal:1423500},
+  1063646566:{n:"Julián Beltrán",c:"Supervisor",p:"104SCS",lu:"Edificio",cl:"Cyberdyne Systems",sal:2000000},
+  1067686970:{n:"Ricardo Vargas",c:"Escolta",p:"101EIS",lu:"Presidencia 1",cl:"Industrias Stark",sal:1800000},
+  1071727374:{n:"Felipe Giraldo",c:"Escolta",p:"102EIS",lu:"Presidencia 2",cl:"Industrias Stark",sal:1800000}
+};
+
+var TURNOS = {
+  1020304050:[["2026-03-02","06:00","14:00"],["2026-03-03","06:00","14:00"],["2026-03-04","06:00","14:00"],["2026-03-05","06:00","14:00"],["2026-03-06","06:00","18:00"],["2026-03-08","06:00","18:00"],["2026-03-09","06:00","14:00"],["2026-03-10","06:00","14:00"],["2026-03-11","06:00","14:00"],["2026-03-12","06:00","14:00"],["2026-03-13","06:00","18:00"],["2026-03-15","06:00","18:00"],["2026-03-16","06:00","14:00"],["2026-03-17","06:00","14:00"],["2026-03-18","06:00","14:00"],["2026-03-19","06:00","14:00"],["2026-03-20","06:00","18:00"],["2026-03-22","06:00","18:00"],["2026-03-23","06:00","14:00"],["2026-03-24","06:00","14:00"],["2026-03-25","06:00","18:00"],["2026-03-26","06:00","14:00"],["2026-03-27","06:00","18:00"],["2026-03-29","06:00","18:00"],["2026-03-30","06:00","14:00"],["2026-03-31","06:00","14:00"]],
+  1032456789:[["2026-03-02","14:00","22:00"],["2026-03-03","14:00","22:00"],["2026-03-04","14:00","22:00"],["2026-03-05","14:00","22:00"],["2026-03-06","18:00","06:00"],["2026-03-07","06:00","18:00"],["2026-03-09","14:00","22:00"],["2026-03-10","14:00","22:00"],["2026-03-11","14:00","22:00"],["2026-03-12","14:00","22:00"],["2026-03-13","18:00","06:00"],["2026-03-14","06:00","18:00"],["2026-03-16","14:00","22:00"],["2026-03-17","14:00","22:00"],["2026-03-18","14:00","22:00"],["2026-03-19","14:00","22:00"],["2026-03-20","18:00","06:00"],["2026-03-21","06:00","18:00"],["2026-03-23","14:00","22:00"],["2026-03-24","14:00","22:00"],["2026-03-25","18:00","06:00"],["2026-03-26","14:00","22:00"],["2026-03-27","18:00","06:00"],["2026-03-28","06:00","18:00"],["2026-03-30","14:00","22:00"],["2026-03-31","14:00","22:00"]],
+  1039404142:[["2026-03-02","07:00","19:00"],["2026-03-03","07:00","19:00"],["2026-03-04","07:00","19:00"],["2026-03-05","05:30","14:00"],["2026-03-06","07:00","18:00"],["2026-03-07","07:00","16:00"],["2026-03-09","07:00","03:00"],["2026-03-11","07:00","19:00"],["2026-03-12","07:00","18:00"],["2026-03-13","07:00","18:00"],["2026-03-14","07:00","18:00"],["2026-03-16","07:00","19:00"],["2026-03-17","06:00","19:00"],["2026-03-18","05:00","14:00"],["2026-03-19","07:00","19:00"],["2026-03-20","07:00","21:00"],["2026-03-22","07:00","18:00"],["2026-03-23","07:00","18:00"],["2026-03-24","07:00","19:00"],["2026-03-25","07:00","19:00"],["2026-03-26","07:00","21:00"],["2026-03-27","07:00","01:00"],["2026-03-30","04:00","12:00"],["2026-03-31","05:30","16:00"]]
+};
+
+var entradasActivas = {};
+var histNuevo = [];
+var ultimaLiq = null;
+
+function G(id){ return document.getElementById(id); }
+
+function showTab(id, btn) {
+  document.querySelectorAll('.tc').forEach(function(t){ t.classList.remove('on'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('on'); });
+  G('tab-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+
+function showMsg(id, tipo, txt) {
+  var el = G(id);
+  el.className = 'alert ' + tipo;
+  el.textContent = txt;
+}
+
+function horas(i, f) {
+  var p1 = i.split(':'), p2 = f.split(':');
+  var d = (parseInt(p2[0])*60+parseInt(p2[1])) - (parseInt(p1[0])*60+parseInt(p1[1]));
+  if(d <= 0) d += 1440;
+  return d/60;
+}
+function esDom(f){ return new Date(f+'T12:00:00').getDay()===0; }
+function esFest(f){ return ['2026-03-23','2026-03-24','2026-04-02','2026-04-03'].indexOf(f)>=0; }
+function esNoc(h){ return h<6||h>=19; }
+function fmt(n){ return '$'+Math.round(n).toLocaleString('es-CO'); }
+function fh(n){ return parseFloat(n).toFixed(1)+'h'; }
+
+function initiales(nombre) {
+  var partes = nombre.split(' ');
+  return (partes[0][0]+(partes[1]?partes[1][0]:'')).toUpperCase();
+}
+
+// ═══ ENTRADA ═══
+function buscarEnt() {
+  var val = parseInt(G('ced-ent').value);
+  var ec = G('ec-ent');
+  if(!val || !DB[val]) {
+    ec.classList.remove('show');
+    G('puesto-ent').value = '';
+    G('btn-ent').disabled = true;
+    if(G('ced-ent').value.length > 3) showMsg('msg-ent','err','Cédula no encontrada. Verifica el número.');
+    return;
+  }
+  if(entradasActivas[val]) {
+    showMsg('msg-ent','warn','Este empleado ya tiene una entrada activa en curso. Debe marcar salida primero.');
+    G('btn-ent').disabled = true;
+    return;
+  }
+  var e = DB[val];
+  G('ea-ent').textContent = initiales(e.n);
+  G('en-ent').textContent = e.n;
+  G('es-ent').textContent = e.c + ' · ' + e.lu + ' · ' + e.cl;
+  G('puesto-ent').value = e.p;
+  ec.classList.add('show');
+  G('btn-ent').disabled = false;
+  G('msg-ent').className = 'alert';
+}
+
+function marcarEntrada() {
+  var id = parseInt(G('ced-ent').value);
+  var fecha = G('fecha-ent').value;
+  var hora = G('hora-ent').value;
+  if(!fecha){ showMsg('msg-ent','err','Ingresa la fecha del turno.'); return; }
+  if(!hora){ showMsg('msg-ent','err','Ingresa la hora de entrada.'); return; }
+  if(!DB[id]){ showMsg('msg-ent','err','Empleado no válido.'); return; }
+  if(entradasActivas[id]){ showMsg('msg-ent','warn','Ya tiene una entrada activa.'); return; }
+  entradasActivas[id] = {fecha:fecha, hora:hora, puesto:DB[id].p};
+  showMsg('msg-ent','ok','✓ Entrada registrada: '+DB[id].n+' · '+fecha+' · '+hora+'. Esperando salida...');
+  G('btn-ent').disabled = true;
+  G('ec-ent').classList.remove('show');
+  G('ced-ent').value = '';
+  G('puesto-ent').value = '';
+  G('hora-ent').value = '';
+}
+
+function limpEnt() {
+  G('ced-ent').value=''; G('fecha-ent').value=hoy();
+  G('hora-ent').value=''; G('puesto-ent').value='';
+  G('ec-ent').classList.remove('show');
+  G('btn-ent').disabled=true;
+  G('msg-ent').className='alert';
+}
+
+// ═══ SALIDA ═══
+function buscarSal() {
+  var val = parseInt(G('ced-sal').value);
+  var ec = G('ec-sal');
+  var ea = G('ent-activa-box');
+  G('btn-sal').disabled = true;
+  if(!val || !DB[val]) {
+    ec.classList.remove('show');
+    ea.classList.remove('show');
+    if(G('ced-sal').value.length > 3) showMsg('msg-sal','err','Cédula no encontrada. Verifica el número.');
+    return;
+  }
+  var e = DB[val];
+  G('ea-sal').textContent = initiales(e.n);
+  G('en-sal').textContent = e.n;
+  G('es-sal').textContent = e.c + ' · ' + e.lu + ' · ' + e.cl;
+  ec.classList.add('show');
+  if(entradasActivas[val]) {
+    var ent = entradasActivas[val];
+    G('ent-activa-txt').textContent = 'Entrada del '+ent.fecha+' a las '+ent.hora+' en puesto '+ent.puesto;
+    ea.classList.add('show');
+    G('btn-sal').disabled = false;
+    G('msg-sal').className = 'alert';
+  } else {
+    ea.classList.remove('show');
+    showMsg('msg-sal','err','No hay entrada activa para este empleado. Debe registrar la entrada primero en el formulario de arriba.');
+  }
+}
+
+function marcarSalida() {
+  var id = parseInt(G('ced-sal').value);
+  var horaSal = G('hora-sal').value;
+  var obs = G('obs-sal').value;
+  if(!horaSal){ showMsg('msg-sal','err','Ingresa la hora de salida.'); return; }
+  if(!entradasActivas[id]){ showMsg('msg-sal','err','No hay entrada activa para este empleado.'); return; }
+  var ent = entradasActivas[id];
+  var e = DB[id];
+  var hrs = horas(ent.hora, horaSal);
+  var dom = esDom(ent.fecha)||esFest(ent.fecha);
+  var h1 = parseInt(ent.hora.split(':')[0]);
+  var noc = esNoc(h1);
+  var tipo='Ordinaria', bx='bx-g', col='var(--green)';
+  if(hrs>8){tipo='Con extras';bx='bx-w';col='var(--warn)';}
+  if(noc&&hrs<=8){tipo='Nocturna';bx='bx-p';col='#7c3aed';}
+  if(noc&&hrs>8){tipo='Extra noc.';bx='bx-r';col='var(--red)';}
+  if(dom&&hrs<=8){tipo='Dominical';bx='bx-w';col='var(--warn)';}
+  if(dom&&hrs>8){tipo='Extra dom.';bx='bx-r';col='var(--red)';}
+  var reg = {id:id,n:e.n,p:e.p,cl:e.cl,fecha:ent.fecha,ent:ent.hora,sal:horaSal,hrs:hrs,tipo:tipo,bx:bx,col:col,obs:obs};
+  histNuevo.unshift(reg);
+  delete entradasActivas[id];
+  var alerta = hrs>12?' ⚠️ Supera 12h — revisar CST Art.167':'';
+  showMsg('msg-sal','ok','✓ Turno completado: '+e.n+' · '+ent.fecha+' · '+ent.hora+'→'+horaSal+' · '+fh(hrs)+alerta);
+  var row = document.createElement('div');
+  row.className = 'data-row';
+  row.innerHTML = '<span style="font-weight:600">'+e.n+'</span><span>'+ent.fecha.slice(5).split('-').reverse().join('/')+'</span><span>'+ent.hora+' → '+horaSal+'</span><span style="color:'+col+';font-weight:700">'+fh(hrs)+'</span><span><span class="bx '+bx+'">'+tipo+'</span></span>';
+  G('hist').prepend(row);
+  limpSal();
+}
+
+function limpSal() {
+  G('ced-sal').value=''; G('hora-sal').value=''; G('obs-sal').value='';
+  G('ec-sal').classList.remove('show');
+  G('ent-activa-box').classList.remove('show');
+  G('btn-sal').disabled=true;
+  G('msg-sal').className='alert';
+}
+
+function hoy() {
+  return new Date().toISOString().split('T')[0];
+}
+
+// ═══ LIQUIDACIÓN ═══
+function getSem(f){
+  var d=new Date(f+'T12:00:00'),day=d.getDay()||7;
+  d.setDate(d.getDate()+4-day);
+  var y=new Date(d.getFullYear(),0,1);
+  return Math.ceil((((d-y)/86400000)+1)/7);
+}
+
+function calcLiq(ced) {
+  var e=DB[ced], ts=TURNOS[ced]||[], vh=e.sal/240;
+  var sems={}, totH=0;
+  ts.forEach(function(t){
+    if(!t[1]||!t[2])return;
+    var sw=getSem(t[0]), hrs=horas(t[1],t[2]);
+    if(!sems[sw])sems[sw]={h:0,ts:[]};
+    sems[sw].h+=hrs; sems[sw].ts.push({f:t[0],i:t[1],fi:t[2],hrs:hrs});
+    totH+=hrs;
+  });
+  var ord=0,ext=0,odN=0,ddD=0,ddN=0,edD=0,edN=0,edDd=0,edNd=0;
+  Object.values(sems).forEach(function(sw){
+    var exSem=Math.max(0,sw.h-42);
+    ord+=Math.min(sw.h,42); ext+=exSem;
+    var restEx=exSem;
+    sw.ts.slice().reverse().forEach(function(t){
+      var dom=esDom(t.f)||esFest(t.f);
+      var h1=parseInt(t.i.split(':')[0]), noc=esNoc(h1);
+      var pEx=restEx>0?Math.min(t.hrs,restEx)/t.hrs:0, pOrd=1-pEx;
+      restEx=Math.max(0,restEx-t.hrs);
+      if(!dom&&noc)odN+=t.hrs*pOrd;
+      if(dom&&!noc)ddD+=t.hrs*pOrd;
+      if(dom&&noc)ddN+=t.hrs*pOrd;
+      if(!dom&&!noc&&pEx>0)edD+=t.hrs*pEx;
+      if(!dom&&noc&&pEx>0)edN+=t.hrs*pEx;
+      if(dom&&!noc&&pEx>0)edDd+=t.hrs*pEx;
+      if(dom&&noc&&pEx>0)edNd+=t.hrs*pEx;
+    });
+  });
+  var odD=Math.max(0,ord-odN-ddD-ddN);
+  var vOdD=odD*vh, vOdN=odN*vh*0.35, vDdD=ddD*vh*0.75, vDdN=ddN*vh*1.1;
+  var vEdD=edD*vh*0.25, vEdN=edN*vh*0.75, vEdDd=edDd*vh*1.05, vEdNd=edNd*vh*1.55;
+  var totalExt=vOdN+vDdD+vDdN+vEdD+vEdN+vEdDd+vEdNd;
+  var dev=e.sal+totalExt, sal=dev*0.04, pen=dev*0.04, ded=sal+pen, net=dev-ded;
+  return {e:e,ced:ced,totH:totH,ord:ord,ext:ext,odD:odD,odN:odN,ddD:ddD,ddN:ddN,edD:edD,edN:edN,edDd:edDd,edNd:edNd,vOdD:vOdD,vOdN:vOdN,vDdD:vDdD,vDdN:vDdN,vEdD:vEdD,vEdN:vEdN,vEdDd:vEdDd,vEdNd:vEdNd,totalExt:totalExt,dev:dev,sal:sal,pen:pen,ded:ded,net:net,vh:vh,turnos:ts.filter(function(t){return t[1];}).length};
+}
+
+function calcular() {
+  var ced = parseInt(G('sel-emp').value);
+  if(!ced){alert('Selecciona un empleado');return;}
+  G('ld').classList.add('on');
+  G('btn-pdf').disabled=true;
+  G('liq-out').innerHTML='';
+  var r = calcLiq(ced);
+  ultimaLiq = r;
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
+      messages:[{role:'user',content:'Eres experto en nómina colombiana. Para '+r.e.n+' ('+r.e.c+') en marzo 2026: horas totales '+r.totH.toFixed(1)+'h, ordinarias '+r.ord.toFixed(1)+'h, extras '+r.ext.toFixed(1)+'h, nocturnas '+r.odN.toFixed(1)+'h, devengado '+fmt(r.dev)+', neto '+fmt(r.net)+'. En exactamente 3 líneas cortas: 1) Resumen de horas y situación laboral, 2) Alerta normativa CST si aplica, 3) Recomendación para gerencia. Muy conciso.'}]})
+  }).then(function(res){return res.json();}).then(function(d){
+    var txt=d.content?d.content.map(function(c){return c.text||'';}).join(''):'Análisis IA no disponible.';
+    G('ld').classList.remove('on');
+    renderLiq(r,txt);
+    G('btn-pdf').disabled=false;
+  }).catch(function(){
+    G('ld').classList.remove('on');
+    renderLiq(r,'Análisis IA no disponible en este momento.');
+    G('btn-pdf').disabled=false;
+  });
+}
+
+function renderLiq(r,aiTxt) {
+  var ini2=initiales(r.e.n);
+  G('liq-out').innerHTML=
+    '<div class="lhdr">'+
+      '<div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">'+
+        '<div style="width:46px;height:46px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:var(--navy);flex-shrink:0;">'+ini2+'</div>'+
+        '<div>'+
+          '<div style="font-size:17px;font-weight:800;">'+r.e.n+'</div>'+
+          '<div style="font-size:11px;color:rgba(255,255,255,.7)">'+r.e.c+' · '+r.e.lu+' · '+r.e.cl+'</div>'+
+          '<div style="font-size:10px;color:rgba(255,255,255,.5)">Cédula: '+r.ced+' · Período: Marzo 2026 · SMMLV: $1.423.500</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="ltots">'+
+        '<div class="lt"><div class="lt-l">Total devengado</div><div class="lt-v" style="color:var(--green)">'+fmt(r.dev)+'</div></div>'+
+        '<div class="lt"><div class="lt-l">Deducciones</div><div class="lt-v" style="color:#f87171">'+fmt(r.ded)+'</div></div>'+
+        '<div class="lt"><div class="lt-l">Neto a pagar</div><div class="lt-v" style="font-size:22px">'+fmt(r.net)+'</div></div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="mtr">'+
+      '<div class="mc"><div class="mc-l">Horas totales</div><div class="mc-v" style="color:var(--navy)">'+fh(r.totH)+'</div></div>'+
+      '<div class="mc"><div class="mc-l">Ordinarias</div><div class="mc-v" style="color:var(--green)">'+fh(r.ord)+'</div></div>'+
+      '<div class="mc"><div class="mc-l">Horas extras</div><div class="mc-v" style="color:var(--warn)">'+fh(r.ext)+'</div></div>'+
+      '<div class="mc"><div class="mc-l">Turnos</div><div class="mc-v" style="color:var(--accent)">'+r.turnos+'</div></div>'+
+      '<div class="mc"><div class="mc-l">Sal. base</div><div class="mc-v" style="color:var(--navy);font-size:14px">'+fmt(r.e.sal)+'</div></div>'+
+    '</div>'+
+    '<div class="tw" style="margin-bottom:14px">'+
+      '<table><thead><tr><th>Tipo de hora</th><th>Horas</th><th>Factor</th><th>Valor/hora</th><th>Subtotal</th></tr></thead><tbody>'+
+      '<tr><td>Ordinaria diurna</td><td>'+fh(r.odD)+'</td><td>1.00</td><td>'+fmt(r.vh)+'</td><td>'+fmt(r.vOdD)+'</td></tr>'+
+      '<tr><td>Ordinaria nocturna <span class="bx bx-p">+35%</span></td><td>'+fh(r.odN)+'</td><td>1.35</td><td>'+fmt(r.vh*1.35)+'</td><td style="color:#7c3aed;font-weight:700">'+fmt(r.vOdN)+'</td></tr>'+
+      '<tr><td>Dominical/festiva diurna <span class="bx bx-w">+75%</span></td><td>'+fh(r.ddD)+'</td><td>1.75</td><td>'+fmt(r.vh*1.75)+'</td><td style="color:var(--warn);font-weight:700">'+fmt(r.vDdD)+'</td></tr>'+
+      '<tr><td>Dominical/festiva nocturna</td><td>'+fh(r.ddN)+'</td><td>2.10</td><td>'+fmt(r.vh*2.10)+'</td><td style="color:var(--warn);font-weight:700">'+fmt(r.vDdN)+'</td></tr>'+
+      '<tr style="background:rgba(245,158,11,.04)"><td><strong>Extra diurna</strong> <span class="bx bx-w">+25%</span></td><td>'+fh(r.edD)+'</td><td>1.25</td><td>'+fmt(r.vh*1.25)+'</td><td style="color:var(--warn);font-weight:700">'+fmt(r.vEdD)+'</td></tr>'+
+      '<tr style="background:rgba(245,158,11,.04)"><td><strong>Extra nocturna</strong> <span class="bx bx-w">+75%</span></td><td>'+fh(r.edN)+'</td><td>1.75</td><td>'+fmt(r.vh*1.75)+'</td><td style="color:var(--warn);font-weight:700">'+fmt(r.vEdN)+'</td></tr>'+
+      '<tr style="background:rgba(245,158,11,.04)"><td><strong>Extra dominical diurna</strong></td><td>'+fh(r.edDd)+'</td><td>2.05</td><td>'+fmt(r.vh*2.05)+'</td><td style="color:var(--warn);font-weight:700">'+fmt(r.vEdDd)+'</td></tr>'+
+      '<tr style="background:rgba(245,158,11,.04)"><td><strong>Extra dominical nocturna</strong></td><td>'+fh(r.edNd)+'</td><td>2.55</td><td>'+fmt(r.vh*2.55)+'</td><td style="color:var(--warn);font-weight:700">'+fmt(r.vEdNd)+'</td></tr>'+
+      '</tbody></table>'+
+    '</div>'+
+    '<div class="tw" style="margin-bottom:14px">'+
+      '<table><thead><tr><th>Concepto</th><th>Tipo</th><th>Valor</th></tr></thead><tbody>'+
+      '<tr><td>Salario base</td><td><span class="bx bx-b">Devengo</span></td><td style="font-weight:700">'+fmt(r.e.sal)+'</td></tr>'+
+      '<tr><td>Recargos y horas extras</td><td><span class="bx bx-g">Devengo</span></td><td style="color:var(--green);font-weight:700">+'+fmt(r.totalExt)+'</td></tr>'+
+      '<tr><td><strong>Total devengado</strong></td><td></td><td style="font-weight:800;color:var(--navy)">'+fmt(r.dev)+'</td></tr>'+
+      '<tr><td>Salud empleado (4%)</td><td><span class="bx bx-r">Deducción</span></td><td style="color:var(--red)">–'+fmt(r.sal)+'</td></tr>'+
+      '<tr><td>Pensión empleado (4%)</td><td><span class="bx bx-r">Deducción</span></td><td style="color:var(--red)">–'+fmt(r.pen)+'</td></tr>'+
+      '</tbody><tfoot><tr><td colspan="2">NETO A PAGAR — '+r.e.n+'</td><td class="neto">'+fmt(r.net)+'</td></tr></tfoot></table>'+
+    '</div>'+
+    '<div class="ai-box"><div class="ai-lbl">⚡ Análisis IA SmartFlow</div><p style="font-size:13px;color:#374151;line-height:1.7">'+aiTxt+'</p></div>'+
+    '<div class="norma"><strong>Normatividad:</strong> CST Art.161 (42h/sem · Ley 2101/2021) · Art.168 (noc.+35%) · Art.179 (dom.+75%) · Art.180 (extra +25%/+75%) · SMMLV 2026: $1.423.500</div>';
+}
+
+// ═══ DESCARGA PDF ═══
+function descargarPDF() {
+  if(!ultimaLiq){alert('Primero calcula la liquidación.');return;}
+  var r=ultimaLiq, jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  doc.setFillColor(16,48,74); doc.rect(0,0,210,32,'F');
+  doc.setTextColor(255,255,255); doc.setFontSize(16); doc.setFont('helvetica','bold');
+  doc.text('SmartFlow',14,13);
+  doc.setFontSize(9); doc.setFont('helvetica','normal');
+  doc.text('Liquidación de nómina · Omnitempus S.A.S · Período: Marzo 2026',14,20);
+  doc.setTextColor(151,201,62); doc.setFontSize(10); doc.setFont('helvetica','bold');
+  doc.text('IA SmartFlow',210-14,20,{align:'right'});
+  doc.setTextColor(16,48,74); doc.setFontSize(13); doc.setFont('helvetica','bold');
+  doc.text(r.e.n,14,42);
+  doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(100,116,139);
+  doc.text(r.e.c+' · '+r.e.lu+' · '+r.e.cl,14,48);
+  doc.text('Cédula: '+r.ced+'  ·  Salario base: '+fmt(r.e.sal)+'  ·  Valor hora: '+fmt(r.vh),14,54);
+  var cols=['Tipo de hora','Horas','Factor','Valor/hora','Subtotal'];
+  var rows=[
+    ['Ordinaria diurna',fh(r.odD),'1.00',fmt(r.vh),fmt(r.vOdD)],
+    ['Ordinaria nocturna (+35%)',fh(r.odN),'1.35',fmt(r.vh*1.35),fmt(r.vOdN)],
+    ['Dominical/festiva diurna (+75%)',fh(r.ddD),'1.75',fmt(r.vh*1.75),fmt(r.vDdD)],
+    ['Dominical/festiva nocturna (+110%)',fh(r.ddN),'2.10',fmt(r.vh*2.10),fmt(r.vDdN)],
+    ['Extra diurna (+25%)',fh(r.edD),'1.25',fmt(r.vh*1.25),fmt(r.vEdD)],
+    ['Extra nocturna (+75%)',fh(r.edN),'1.75',fmt(r.vh*1.75),fmt(r.vEdN)],
+    ['Extra dominical diurna (+105%)',fh(r.edDd),'2.05',fmt(r.vh*2.05),fmt(r.vEdDd)],
+    ['Extra dominical nocturna (+155%)',fh(r.edNd),'2.55',fmt(r.vh*2.55),fmt(r.vEdNd)]
+  ];
+  doc.setTextColor(16,48,74); doc.setFontSize(10); doc.setFont('helvetica','bold');
+  doc.text('Clasificación de horas trabajadas',14,62);
+  doc.autoTable({startY:65,head:[cols],body:rows,headStyles:{fillColor:[16,48,74],fontSize:8},bodyStyles:{fontSize:8},alternateRowStyles:{fillColor:[248,250,252]},margin:{left:14,right:14}});
+  var y=doc.lastAutoTable.finalY+6;
+  doc.setTextColor(16,48,74); doc.setFontSize(10); doc.setFont('helvetica','bold');
+  doc.text('Resumen de nómina',14,y);
+  doc.autoTable({startY:y+3,head:[['Concepto','Tipo','Valor']],
+    body:[['Salario base','Devengo',fmt(r.e.sal)],['Recargos y horas extras','Devengo','+'+fmt(r.totalExt)],['Total devengado','Devengo',fmt(r.dev)],['Salud empleado (4%)','Deducción','–'+fmt(r.sal)],['Pensión empleado (4%)','Deducción','–'+fmt(r.pen)],['NETO A PAGAR','',fmt(r.net)]],
+    headStyles:{fillColor:[16,48,74],fontSize:8},bodyStyles:{fontSize:8},alternateRowStyles:{fillColor:[248,250,252]},margin:{left:14,right:14}});
+  var yf=doc.lastAutoTable.finalY+8;
+  doc.setFillColor(248,250,252); doc.rect(14,yf,182,14,'F');
+  doc.setTextColor(100,116,139); doc.setFontSize(7); doc.setFont('helvetica','normal');
+  doc.text('Normatividad: CST Art.161 (42h/sem·Ley 2101/2021) · Art.168 (noc.+35%) · Art.179 (dom.+75%) · Art.180 (extra +25%/+75%)',14,yf+5);
+  doc.text('Documento generado por SmartFlow IA · '+new Date().toLocaleDateString('es-CO'),14,yf+11);
+  doc.save('Liquidacion_'+r.e.n.replace(/ /g,'_')+'_Marzo2026.pdf');
+}
+
+// ═══ DESCARGA CSV ═══
+function descargarCSV() {
+  var filas=[['Empleado','Cédula','Puesto','Cliente','Fecha','Entrada','Salida','Horas','Tipo','Observación']];
+  histNuevo.forEach(function(r){
+    filas.push([r.n,r.id,r.p,r.cl,r.fecha,r.ent,r.sal,r.hrs.toFixed(1),r.tipo,r.obs||'']);
+  });
+  filas.push(['Alejandro Torres',1020304050,'101VEW','Embajada de Winterfell','2026-03-02','06:00','14:00',8,'Ordinaria','']);
+  filas.push(['Sofía Villamil',1032456789,'101VEW','Embajada de Winterfell','2026-03-02','14:00','22:00',8,'Ordinaria','']);
+  filas.push(['Mateo Holguín',1018273645,'101VEW','Embajada de Winterfell','2026-03-02','22:00','06:00',8,'Nocturna','']);
+  filas.push(['Joaquín Lozano',1039404142,'104EAC','Acme Corp','2026-03-09','07:00','03:00',20,'Extra','Turno extendido']);
+  var csv=filas.map(function(f){return f.join(',');}).join('\n');
+  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='Turnos_Omnitempus_'+hoy()+'.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// Init
+G('fecha-ent').value=hoy();
+</script>
+</body>
+</html>
