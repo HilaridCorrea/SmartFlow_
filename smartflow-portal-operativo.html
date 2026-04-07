@@ -3,773 +3,929 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartFlow OT — Portal Operativo</title>
+<title>SmartFlow OT — Portal Operativo · Omnitempus S.A.S</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
-:root{--navy:#10304a;--green:#97c93e;--accent:#1a4d75;--light:#f8fafc;--warn:#f59e0b;--red:#ef4444;}
+:root{--navy:#10304a;--green:#97c93e;--accent:#1a4d75;--red:#ef4444;--warn:#f59e0b;--light:#f8fafc;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--light);color:#0f172a;}
-/* SIDEBAR */
-.layout{display:flex;min-height:100vh;}
-aside{width:240px;background:var(--navy);color:white;display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;}
-.sb-logo{padding:24px 20px 16px;border-bottom:1px solid rgba(255,255,255,0.08);}
-.sb-logo-name{font-size:18px;font-weight:800;}
-.sb-logo-name span{color:var(--green);}
-.sb-sub{font-size:9px;letter-spacing:.2em;color:#64748b;font-weight:700;}
-.sb-section{padding:16px 12px 8px;font-size:9px;font-weight:800;letter-spacing:.15em;color:#475569;text-transform:uppercase;}
-.sb-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;margin:2px 8px;cursor:pointer;font-size:13px;font-weight:600;color:rgba(255,255,255,0.65);transition:all .2s;border:none;background:transparent;width:calc(100% - 16px);text-align:left;}
-.sb-item:hover{background:rgba(255,255,255,0.08);color:white;}
-.sb-item.active{background:rgba(151,201,62,0.15);color:var(--green);border:1px solid rgba(151,201,62,0.2);}
-.sb-item svg{flex-shrink:0;}
-.sb-badge{margin-left:auto;background:var(--red);color:white;font-size:10px;font-weight:800;padding:1px 6px;border-radius:10px;}
-/* MAIN */
-main{flex:1;overflow:hidden;}
-.topbar{background:white;border-bottom:1px solid #e2e8f0;padding:0 28px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
-.topbar-title{font-size:17px;font-weight:800;color:var(--navy);}
-.topbar-sub{font-size:12px;color:#64748b;margin-top:1px;}
-.topbar-right{display:flex;align-items:center;gap:12px;}
-.btn{padding:8px 18px;border-radius:10px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
-.btn-primary{background:var(--navy);color:white;}
-.btn-primary:hover{background:var(--accent);}
-.btn-green{background:var(--green);color:var(--navy);}
-.btn-green:hover{opacity:.9;}
-.btn-outline{background:white;border:1.5px solid #e2e8f0;color:var(--navy);}
-.btn-outline:hover{border-color:var(--navy);}
-.btn-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);}
-.content{padding:28px;overflow-y:auto;height:calc(100vh - 64px);}
-/* VIEWS */
-.view{display:none;} .view.active{display:block;}
-/* Cards metrics */
-.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px;}
-.mc{background:white;border:1px solid #e2e8f0;border-radius:16px;padding:18px;position:relative;overflow:hidden;}
-.mc::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius:4px 0 0 4px;}
-.mc.green::before{background:var(--green);}
-.mc.navy::before{background:var(--navy);}
-.mc.warn::before{background:var(--warn);}
-.mc.red::before{background:var(--red);}
-.mc-label{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
-.mc-val{font-size:26px;font-weight:800;line-height:1;}
-.mc-val.green{color:#15803d;}
-.mc-val.navy{color:var(--navy);}
-.mc-val.warn{color:#92400e;}
-.mc-val.red{color:var(--red);}
-.mc-sub{font-size:11px;color:#94a3b8;margin-top:4px;}
-/* Tables */
-.tbl-wrap{overflow-x:auto;border-radius:14px;border:1px solid #e2e8f0;background:white;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#f1f5f9;color:#0f172a;display:flex;min-height:100vh;}
+.sidebar{width:260px;background:var(--navy);color:white;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;}
+.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.brand{font-size:20px;font-weight:800;color:white;margin-bottom:2px;}
+.brand span{color:var(--green);}
+.sub-brand{font-size:10px;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:.12em;text-transform:uppercase;}
+.empresa-lbl{font-size:11px;color:rgba(255,255,255,0.55);margin-top:6px;}
+.sidebar-section{padding:16px 12px 4px;font-size:9px;font-weight:800;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:.12em;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;margin:2px 8px;cursor:pointer;transition:all .2s;border:none;background:transparent;color:rgba(255,255,255,0.65);font-family:inherit;font-size:13px;font-weight:600;width:calc(100% - 16px);text-align:left;}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:white;}
+.nav-item.active{background:rgba(151,201,62,0.15);color:white;border:1px solid rgba(151,201,62,0.25);}
+.nav-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);}
+.nav-item.active .nav-icon{background:var(--green);}
+.nav-badge{background:var(--red);color:white;font-size:10px;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:auto;}
+.sidebar-footer{margin-top:auto;padding:16px;border-top:1px solid rgba(255,255,255,0.08);font-size:10px;color:rgba(255,255,255,0.3);}
+.main{margin-left:260px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{background:white;border-bottom:1px solid #e2e8f0;padding:0 28px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+.topbar-title h1{font-size:16px;font-weight:800;color:var(--navy);}
+.topbar-title p{font-size:11px;color:#94a3b8;}
+.topbar-actions{display:flex;align-items:center;gap:10px;}
+.tbtn{display:flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px solid #e2e8f0;border-radius:10px;background:white;color:var(--navy);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
+.tbtn:hover{border-color:var(--navy);}
+.tbtn-green{background:var(--green);color:var(--navy);border-color:var(--green);}
+.tbtn-green:hover{opacity:.9;}
+.avatar-btn{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--accent));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:white;border:none;cursor:pointer;}
+.content{padding:24px 28px;flex:1;}
+.page{display:none;}.page.active{display:block;}
+.card{background:white;border-radius:16px;border:1px solid #e2e8f0;padding:22px;margin-bottom:18px;box-shadow:0 1px 6px rgba(16,48,74,0.04);}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+.card-title{font-size:14px;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:8px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;flex-shrink:0;}
+.dot-r{background:var(--red);}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:13px;margin-bottom:18px;}
+.stat-card{background:white;border-radius:14px;border:1px solid #e2e8f0;padding:16px;}
+.stat-label{font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+.stat-val{font-size:24px;font-weight:800;line-height:1;}
+.stat-sub{font-size:11px;color:#64748b;margin-top:3px;}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:13px;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+@media(max-width:640px){.fg2,.fg3{grid-template-columns:1fr;}}
+.fg label{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;}
+.fi{padding:10px 13px;border:1.5px solid #e2e8f0;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:#0f172a;outline:none;transition:border .2s;background:white;width:100%;}
+.fi:focus{border-color:var(--green);}
+.fi[readonly]{background:#f1f5f9;color:#64748b;}
+.srow{display:flex;gap:8px;}.srow .fi{flex:1;}
+.btn{padding:10px 20px;border-radius:10px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
+.btn-g{background:var(--green);color:var(--navy);}.btn-g:hover{opacity:.9;}
+.btn-g:disabled{opacity:.35;cursor:not-allowed;}
+.btn-n{background:var(--navy);color:white;}.btn-n:hover{background:var(--accent);}
+.btn-n:disabled{opacity:.35;cursor:not-allowed;}
+.btn-o{background:white;border:1.5px solid #e2e8f0;color:var(--navy);}.btn-o:hover{border-color:var(--navy);}
+.btn-sm{padding:6px 12px;font-size:11px;}
+.btn-row{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;}
+.ec{background:rgba(151,201,62,0.08);border:1px solid rgba(151,201,62,0.25);border-radius:12px;padding:13px;display:none;align-items:center;gap:12px;margin-bottom:13px;}
+.ec.show{display:flex;}
+.ec-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--accent));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:white;flex-shrink:0;}
+.alrt{padding:10px 14px;border-radius:10px;font-size:12px;margin-bottom:12px;display:none;line-height:1.5;}
+.alrt.ok{background:rgba(151,201,62,0.1);border:1px solid rgba(151,201,62,0.3);color:#166534;display:block;}
+.alrt.er{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#991b1b;display:block;}
+.alrt.wn{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#92400e;display:block;}
+.ea-box{background:rgba(16,48,74,0.04);border:1px solid rgba(16,48,74,0.12);border-radius:10px;padding:12px;margin-bottom:13px;display:none;}
+.ea-box.show{display:block;}
+.ea-lbl{font-size:10px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
+.ea-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--navy);}
+.ea-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;}
+.sep-txt{text-align:center;padding:6px 0;color:#94a3b8;font-size:12px;font-weight:600;}
+/* Tabla */
+.tbl-wrap{overflow-x:auto;}
+.thdr{display:grid;gap:8px;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;background:#f8fafc;border-radius:8px;margin-bottom:4px;}
+.trow{display:grid;gap:8px;padding:9px 12px;border-bottom:1px solid #f1f5f9;font-size:12px;color:#374151;align-items:center;}
+.trow:last-child{border-bottom:none;}
+.bx{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;}
+.bx-g{background:rgba(151,201,62,0.15);color:#166534;}
+.bx-p{background:rgba(124,58,237,0.1);color:#6d28d9;}
+.bx-w{background:rgba(245,158,11,0.15);color:#92400e;}
+.bx-r{background:rgba(239,68,68,0.15);color:#991b1b;}
+.bx-b{background:rgba(16,48,74,0.1);color:var(--navy);}
+/* Filtros */
+.filtros{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;padding:14px;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0;}
+.filtros label{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;}
+.fsel{padding:8px 12px;border:1px solid #e2e8f0;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:#0f172a;background:white;cursor:pointer;outline:none;min-width:160px;}
+/* Liquidación */
+.liq-hdr{background:linear-gradient(135deg,var(--navy),var(--accent));color:white;border-radius:14px;padding:20px;margin-bottom:16px;}
+.ltots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;}
+@media(max-width:600px){.ltots{grid-template-columns:repeat(2,1fr);}}
+.lt{background:rgba(255,255,255,0.1);border-radius:9px;padding:10px;text-align:center;}
+.lt-l{font-size:9px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;}
+.lt-v{font-size:17px;font-weight:800;}
+.mtr{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px;}
+.mc{background:var(--light);border:1px solid #e2e8f0;border-radius:12px;padding:13px;text-align:center;}
+.mc-l{font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.mc-v{font-size:20px;font-weight:800;}
+.tw{overflow-x:auto;border-radius:12px;border:1px solid #e2e8f0;margin-bottom:14px;}
 table{width:100%;border-collapse:collapse;font-size:12px;}
 thead tr{background:var(--navy);}
-th{padding:12px 14px;text-align:left;font-weight:700;font-size:10px;color:white;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
-td{padding:11px 14px;border-bottom:1px solid #f1f5f9;white-space:nowrap;}
+th{padding:9px 11px;text-align:left;font-weight:700;font-size:10px;color:white;text-transform:uppercase;white-space:nowrap;}
+td{padding:8px 11px;border-bottom:1px solid #f1f5f9;color:#374151;white-space:nowrap;}
 tr:last-child td{border-bottom:none;}
-tr:hover td{background:#f8fafc;}
-.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;}
-.b-green{background:rgba(151,201,62,0.15);color:#3d6b0d;}
-.b-warn{background:rgba(245,158,11,0.15);color:#92400e;}
-.b-red{background:rgba(239,68,68,0.15);color:#991b1b;}
-.b-blue{background:rgba(16,48,74,0.1);color:var(--navy);}
-.b-purple{background:rgba(124,58,237,0.1);color:#6d28d9;}
-/* Card container */
-.card{background:white;border-radius:16px;border:1px solid #e2e8f0;padding:22px;margin-bottom:18px;}
-.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
-.card-title{font-size:14px;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:8px;}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
-/* Form */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.fg{display:flex;flex-direction:column;gap:5px;}
-.fg.full{grid-column:1/-1;}
-label{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;}
-input,select,textarea{padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:#0f172a;outline:none;transition:border .2s;background:var(--light);}
-input:focus,select:focus,textarea:focus{border-color:var(--green);background:white;}
-input[readonly]{background:#f1f5f9;color:#64748b;}
-/* Emp preview */
-.ep{background:rgba(151,201,62,0.08);border:1px solid rgba(151,201,62,0.25);border-radius:12px;padding:14px;display:none;align-items:center;gap:12px;margin-top:8px;}
-.ep.show{display:flex;}
-.ep-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--accent));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:white;flex-shrink:0;}
-.ep-nm{font-size:13px;font-weight:700;color:var(--navy);}
-.ep-sb{font-size:11px;color:#64748b;}
-.status-ok{color:#15803d;font-weight:700;}
-.status-err{color:var(--red);font-weight:700;}
-/* Alert boxes */
-.alert{padding:12px 16px;border-radius:10px;font-size:12px;margin-bottom:14px;display:flex;align-items:flex-start;gap:10px;}
-.alert-warn{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#92400e;}
-.alert-err{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#991b1b;}
-.alert-ok{background:rgba(151,201,62,0.1);border:1px solid rgba(151,201,62,0.3);color:#3d6b0d;}
-/* Liquidacion */
-.liq-hdr{background:linear-gradient(135deg,var(--navy),var(--accent));color:white;border-radius:14px;padding:22px;margin-bottom:18px;}
-.liq-av{width:48px;height:48px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--navy);flex-shrink:0;}
-.totales-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}
-.tg-box{background:rgba(255,255,255,0.1);border-radius:10px;padding:12px;text-align:center;}
-.tg-label{font-size:9px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
-.tg-val{font-size:20px;font-weight:800;}
-/* Loading */
-.spin{width:16px;height:16px;border:2px solid rgba(151,201,62,0.3);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;}
+tfoot tr td{font-weight:800;background:var(--navy);color:white;font-size:12px;}
+tfoot .neto{color:var(--green);font-size:15px;}
+tfoot .tot{color:var(--green);font-size:13px;}
+.norma{margin-top:10px;padding:9px;background:rgba(151,201,62,0.08);border:1px solid rgba(151,201,62,0.2);border-radius:9px;font-size:11px;color:#475569;}
+.ai-box{margin-top:12px;padding:12px;background:rgba(16,48,74,0.04);border:1px solid rgba(16,48,74,0.1);border-radius:10px;}
+.ai-lbl{font-size:10px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+.spin-row{display:none;align-items:center;gap:8px;color:var(--navy);font-size:13px;font-weight:600;margin-bottom:12px;padding:10px;background:rgba(16,48,74,0.04);border-radius:10px;}
+.spin-row.on{display:flex;}
+.spin{width:13px;height:13px;border:2px solid rgba(151,201,62,0.3);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
-/* Progress bar */
-.pbar{height:8px;border-radius:4px;background:#e2e8f0;overflow:hidden;margin-top:4px;}
-.pbar-f{height:100%;border-radius:4px;background:var(--green);transition:width 1.2s cubic-bezier(.22,1,.36,1);}
-.pbar-f.warn{background:var(--warn);}
-.pbar-f.red{background:var(--red);}
-/* Gerencial chart bars */
-.chart-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.chart-label{font-size:11px;font-weight:600;color:#374151;min-width:140px;}
-.chart-bar-wrap{flex:1;height:20px;background:#f1f5f9;border-radius:6px;overflow:hidden;position:relative;}
-.chart-bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:10px;font-weight:700;color:white;transition:width 1.2s cubic-bezier(.22,1,.36,1);}
-/* Toast */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:white;padding:14px 20px;border-radius:14px;box-shadow:0 10px 30px rgba(16,48,74,.3);transform:translateY(80px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);z-index:1000;font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;border-left:4px solid var(--green);max-width:360px;}
-.toast.show{transform:translateY(0);opacity:1;}
-/* Export modal */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:center;justify-content:center;}
-.modal-bg.show{display:flex;}
-.modal{background:white;border-radius:20px;padding:32px;width:480px;max-width:90vw;}
-.modal h3{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:8px;}
-.modal p{font-size:13px;color:#64748b;margin-bottom:20px;}
-.export-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
-.eo{border:1.5px solid #e2e8f0;border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;text-align:center;}
-.eo:hover{border-color:var(--navy);background:rgba(16,48,74,.03);}
-.eo svg{display:block;margin:0 auto 8px;}
-.eo-title{font-size:12px;font-weight:700;color:var(--navy);}
-.eo-sub{font-size:10px;color:#94a3b8;}
-@media print{aside,.topbar,.topbar-right{display:none!important;} main{width:100%!important;} .content{height:auto!important;} .btn{display:none!important;}}
+/* Empleados */
+.emp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:13px;}
+.emp-item{background:white;border:1px solid #e2e8f0;border-radius:13px;padding:15px;display:flex;align-items:center;gap:12px;transition:all .2s;}
+.emp-item:hover{border-color:rgba(151,201,62,0.4);box-shadow:0 4px 12px rgba(16,48,74,0.08);}
+.emp-av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--accent));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:white;flex-shrink:0;}
+.emp-p{font-size:10px;background:rgba(151,201,62,0.1);color:var(--navy);font-weight:700;padding:2px 8px;border-radius:6px;margin-top:4px;display:inline-block;}
+/* Alerta items */
+.alert-item{display:flex;align-items:flex-start;gap:10px;padding:12px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:8px;}
+.al-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+/* Dashboard */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;}
+@media(max-width:700px){.dash-grid{grid-template-columns:1fr;}}
+.turno-vivo{display:flex;align-items:center;gap:12px;padding:11px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:8px;}
+.tv-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--accent));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:white;flex-shrink:0;}
+/* Total mes card */
+.total-mes{background:linear-gradient(135deg,var(--navy),var(--accent));color:white;border-radius:16px;padding:22px;margin-bottom:18px;}
+.tm-title{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;}
+.tm-val{font-size:36px;font-weight:800;color:var(--green);}
+.tm-sub{font-size:12px;color:rgba(255,255,255,0.6);margin-top:4px;}
+.tm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px;}
+@media(max-width:600px){.tm-grid{grid-template-columns:repeat(2,1fr);}}
+.tm-item{background:rgba(255,255,255,0.08);border-radius:10px;padding:12px;text-align:center;}
+.tm-item-l{font-size:9px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
+.tm-item-v{font-size:16px;font-weight:800;}
+/* Resumen por empresa */
+.empresa-card{background:white;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px;}
+.empresa-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.empresa-nombre{font-size:14px;font-weight:800;color:var(--navy);}
+.empresa-total{font-size:18px;font-weight:900;color:var(--green);}
 </style>
 </head>
 <body>
-<div class="toast" id="toast"><svg width="16" height="16" fill="none" stroke="var(--green)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg><span id="toast-msg"></span></div>
 
-<!-- Modal exportar -->
-<div class="modal-bg" id="modal-bg" onclick="closeModal()">
-<div class="modal" onclick="event.stopPropagation()">
-  <h3>Exportar informe gerencial</h3>
-  <p>Selecciona el formato de exportación para el reporte de nómina de Marzo 2026.</p>
-  <div class="export-options">
-    <div class="eo" onclick="exportar('pdf')">
-      <svg width="28" height="28" fill="none" stroke="#ef4444" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-      <div class="eo-title">PDF Gerencial</div>
-      <div class="eo-sub">Reporte ejecutivo imprimible</div>
-    </div>
-    <div class="eo" onclick="exportar('excel')">
-      <svg width="28" height="28" fill="none" stroke="#15803d" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-      <div class="eo-title">Excel / CSV</div>
-      <div class="eo-sub">Datos para Google Sheets</div>
-    </div>
-    <div class="eo" onclick="exportar('desprendible')">
-      <svg width="28" height="28" fill="none" stroke="var(--navy)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-      <div class="eo-title">Desprendible x empleado</div>
-      <div class="eo-sub">Un PDF por persona</div>
-    </div>
-    <div class="eo" onclick="exportar('gerencial')">
-      <svg width="28" height="28" fill="none" stroke="var(--green)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-      <div class="eo-title">Dashboard Gerencial</div>
-      <div class="eo-sub">KPIs para alta gerencia</div>
-    </div>
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="brand">Smart<span>Flow</span></div>
+    <div class="sub-brand">OT — Portal Operativo</div>
+    <div class="empresa-lbl">Omnitempus S.A.S</div>
   </div>
-  <button class="btn btn-outline" onclick="closeModal()" style="width:100%;">Cancelar</button>
-</div>
-</div>
-
-<div class="layout">
-<aside>
-  <div class="sb-logo">
-    <div class="sb-logo-name">Smart<span>Flow</span></div>
-    <div style="font-size:10px;color:var(--green);font-weight:700;margin-top:2px;">OT — Portal Operativo</div>
-    <div class="sb-sub" style="margin-top:6px;">Omnitempus S.A.S</div>
-  </div>
-  <div style="padding:8px;">
-    <div class="sb-section">Operación</div>
-    <button class="sb-item active" onclick="showView('dashboard',this)">
-      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10-3a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1v-7z"/></svg>
-      Dashboard
-    </button>
-    <button class="sb-item" onclick="showView('registro',this)">
-      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-      Registrar turno
-      <span class="sb-badge" id="badge-reg">!</span>
-    </button>
-    <button class="sb-item" onclick="showView('turnos',this)">
-      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-      Histórico turnos
-    </button>
-    <button class="sb-item" onclick="showView('empleados',this)">
-      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-      Empleados
-    </button>
-    <div class="sb-section">Nómina</div>
-    <button class="sb-item" onclick="showView('liquidacion',this)">
-      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 19h16a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-      Liquidación IA
-    </button>
-    <button class="sb-item" onclick="showView('gerencial',this)">
-      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-      Informe Gerencial
-    </button>
-    <div class="sb-section">Sistema</div>
-    <button class="sb-item" onclick="showView('alertas',this)">
-      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-      Alertas
-      <span class="sb-badge">3</span>
-    </button>
-  </div>
-  <div style="margin-top:auto;padding:16px;border-top:1px solid rgba(255,255,255,0.08);">
-    <div style="font-size:11px;color:#475569;font-weight:600;">SmartFlow OT v2.0</div>
-    <div style="font-size:10px;color:#334155;">Demo · Omnitempus S.A.S</div>
-  </div>
+  <div class="sidebar-section">Operación</div>
+  <button class="nav-item active" onclick="goTo('dashboard',this)">
+    <div class="nav-icon"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zm10-4a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1v-7z"/></svg></div>
+    Dashboard
+  </button>
+  <button class="nav-item" onclick="goTo('registro',this)">
+    <div class="nav-icon"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg></div>
+    Registrar turno
+    <span class="nav-badge" id="badge-activos">0</span>
+  </button>
+  <button class="nav-item" onclick="goTo('historico',this)">
+    <div class="nav-icon"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>
+    Histórico turnos
+  </button>
+  <button class="nav-item" onclick="goTo('empleados',this)">
+    <div class="nav-icon"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+    Empleados
+  </button>
+  <div class="sidebar-section">Nómina</div>
+  <button class="nav-item" onclick="goTo('liquidacion',this)">
+    <div class="nav-icon"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+    Liquidación IA
+  </button>
+  <button class="nav-item" onclick="goTo('informe',this)">
+    <div class="nav-icon"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+    Informe Gerencial
+  </button>
+  <div class="sidebar-section">Sistema</div>
+  <button class="nav-item" onclick="goTo('alertas',this)">
+    <div class="nav-icon"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg></div>
+    Alertas
+    <span class="nav-badge">3</span>
+  </button>
+  <div class="sidebar-footer">SmartFlow OT v3.0 · Omnitempus S.A.S</div>
 </aside>
 
-<main>
-<div class="topbar">
-  <div>
-    <div class="topbar-title" id="view-title">Dashboard general</div>
-    <div class="topbar-sub" id="view-sub">Marzo 2026 · Omnitempus S.A.S</div>
-  </div>
-  <div class="topbar-right">
-    <button class="btn btn-outline" onclick="document.getElementById('modal-bg').classList.add('show')">
-      <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-      Exportar
-    </button>
-    <div style="width:36px;height:36px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:800;">OP</div>
-  </div>
-</div>
-
-<div class="content">
-
-<!-- DASHBOARD -->
-<div class="view active" id="view-dashboard">
-  <div class="metrics">
-    <div class="mc navy"><div class="mc-label">Empleados activos</div><div class="mc-val navy">21</div><div class="mc-sub">4 clientes · 12 puestos</div></div>
-    <div class="mc green"><div class="mc-label">Turnos marzo</div><div class="mc-val green">242</div><div class="mc-sub">6 empleados con datos</div></div>
-    <div class="mc warn"><div class="mc-label">Horas extras detectadas</div><div class="mc-val warn">38.5h</div><div class="mc-sub">Sem 1 y 3 críticas</div></div>
-    <div class="mc red"><div class="mc-label">Alertas normatividad</div><div class="mc-val red">3</div><div class="mc-sub">Requieren revisión</div></div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
-    <div class="card">
-      <div class="card-hdr"><div class="card-title"><span class="dot"></span>Horas por empresa</div></div>
-      <div id="chart-empresas"></div>
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">
+      <h1 id="pg-title">Dashboard</h1>
+      <p id="pg-sub">Marzo 2026 · Omnitempus S.A.S</p>
     </div>
+    <div class="topbar-actions">
+      <button class="tbtn" onclick="exportCSV()">↓ CSV</button>
+      <button class="tbtn tbtn-green" onclick="goTo('liquidacion', document.querySelectorAll('.nav-item')[4])">⚡ Liquidar mes</button>
+      <div class="avatar-btn">OP</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+  <!-- ══════ DASHBOARD ══════ -->
+  <div id="page-dashboard" class="page active">
+    <!-- Total nómina mes -->
+    <div class="total-mes" id="tm-card">
+      <div class="tm-title">Total nómina a pagar · Marzo 2026 · Omnitempus S.A.S</div>
+      <div class="tm-val" id="tm-val">Calculando...</div>
+      <div class="tm-sub" id="tm-sub">Suma neto a pagar todos los empleados activos</div>
+      <div class="tm-grid">
+        <div class="tm-item"><div class="tm-item-l">Devengado bruto</div><div class="tm-item-v" id="tm-dev">—</div></div>
+        <div class="tm-item"><div class="tm-item-l">Deducciones totales</div><div class="tm-item-v" id="tm-ded">—</div></div>
+        <div class="tm-item"><div class="tm-item-l">Horas ordinarias</div><div class="tm-item-v" id="tm-hord">—</div></div>
+        <div class="tm-item"><div class="tm-item-l">Horas extras</div><div class="tm-item-v" id="tm-hext">—</div></div>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Vigilantes activos ahora</div><div class="stat-val" style="color:var(--green)" id="stat-activos">0</div><div class="stat-sub">Entradas sin salida</div></div>
+      <div class="stat-card"><div class="stat-label">Empleados en nómina</div><div class="stat-val" style="color:var(--navy)">21</div><div class="stat-sub">Todos los puestos</div></div>
+      <div class="stat-card"><div class="stat-label">Clientes activos</div><div class="stat-val" style="color:var(--accent)">4</div><div class="stat-sub">Contratos vigentes</div></div>
+      <div class="stat-card"><div class="stat-label">Alertas normativas</div><div class="stat-val" style="color:var(--red)">3</div><div class="stat-sub">Requieren revisión</div></div>
+    </div>
+    <div class="dash-grid">
+      <div class="card">
+        <div class="card-hdr"><div class="card-title"><span class="dot"></span>Entradas activas en sesión</div></div>
+        <div id="dash-activos"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No hay entradas activas. Registra una en "Registrar turno".</p></div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><div class="card-title"><span class="dot"></span>Últimos turnos completados</div></div>
+        <div id="dash-ultimos">
+          <div class="turno-vivo"><div class="tv-av">AT</div><div style="flex:1"><div style="font-size:12px;font-weight:700">Alejandro Torres</div><div style="font-size:11px;color:#64748b">02/03 · 06:00→14:00 · 8.0h</div></div><span class="bx bx-g">Ordinaria</span></div>
+          <div class="turno-vivo"><div class="tv-av">SV</div><div style="flex:1"><div style="font-size:12px;font-weight:700">Sofía Villamil</div><div style="font-size:11px;color:#64748b">02/03 · 14:00→22:00 · 8.0h</div></div><span class="bx bx-g">Ordinaria</span></div>
+          <div class="turno-vivo"><div class="tv-av">MH</div><div style="flex:1"><div style="font-size:12px;font-weight:700">Mateo Holguín</div><div style="font-size:11px;color:#64748b">02/03 · 22:00→06:00 · 8.0h</div></div><span class="bx bx-p">Nocturna</span></div>
+        </div>
+      </div>
+    </div>
+    <!-- Resumen por empresa -->
     <div class="card">
-      <div class="card-hdr"><div class="card-title"><span class="dot"></span>Estado de nómina</div></div>
+      <div class="card-hdr"><div class="card-title"><span class="dot"></span>Nómina total por empresa · Marzo 2026</div></div>
+      <div id="dash-empresas"></div>
+    </div>
+  </div>
+
+  <!-- ══════ REGISTRO ══════ -->
+  <div id="page-registro" class="page">
+    <div class="card">
+      <div class="card-hdr"><div class="card-title"><span class="dot"></span>Marcar entrada</div><span style="font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;background:rgba(151,201,62,0.1);color:#166534;border:1px solid rgba(151,201,62,0.3);">ENTRADA</span></div>
+      <div class="alrt" id="msg-ent"></div>
+      <div class="fg"><label>Número de cédula</label>
+        <div class="srow"><input class="fi" type="number" id="ced-ent" placeholder="Ej: 1020304050"><button class="btn btn-n" onclick="buscarEnt()">Buscar empleado</button></div>
+      </div>
+      <div class="ec" id="ec-ent">
+        <div class="ec-av" id="ea-ent"></div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--navy)" id="en-ent"></div><div style="font-size:11px;color:#64748b" id="es-ent"></div></div>
+        <div style="background:#dcfce7;color:#166534;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;flex-shrink:0;">Activo</div>
+      </div>
+      <div class="fg2">
+        <div class="fg"><label>Fecha del turno</label><input class="fi" type="date" id="fecha-ent"></div>
+        <div class="fg"><label>ID Puesto (auto)</label><input class="fi" type="text" id="puesto-ent" readonly></div>
+      </div>
+      <div class="fg"><label>Hora de entrada</label><input class="fi" type="time" id="hora-ent"></div>
+      <div class="btn-row">
+        <button class="btn btn-g" id="btn-ent" onclick="marcarEntrada()" disabled>↵ Registrar entrada</button>
+        <button class="btn btn-o" onclick="limpEnt()">Limpiar</button>
+      </div>
+    </div>
+
+    <div class="sep-txt">— El vigilante trabaja su turno —</div>
+
+    <div class="card">
+      <div class="card-hdr"><div class="card-title"><span class="dot dot-r"></span>Marcar salida</div><span style="font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;background:rgba(239,68,68,0.1);color:#991b1b;border:1px solid rgba(239,68,68,0.3);">SALIDA</span></div>
+      <div class="alrt" id="msg-sal"></div>
+      <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:10px 13px;margin-bottom:12px;font-size:12px;color:#92400e;">⚠️ Formulario independiente. Solo activo si el empleado registró entrada en esta sesión.</div>
+      <div class="fg"><label>Número de cédula</label>
+        <div class="srow"><input class="fi" type="number" id="ced-sal" placeholder="Ej: 1020304050"><button class="btn btn-n" onclick="buscarSal()">Buscar entrada activa</button></div>
+      </div>
+      <div class="ec" id="ec-sal">
+        <div class="ec-av" id="ea-sal"></div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--navy)" id="en-sal"></div><div style="font-size:11px;color:#64748b" id="es-sal"></div></div>
+      </div>
+      <div class="ea-box" id="ea-box">
+        <div class="ea-lbl">Entrada activa encontrada</div>
+        <div class="ea-row"><span class="ea-dot"></span><span id="ea-txt"></span></div>
+      </div>
+      <div class="fg"><label>Hora de salida</label><input class="fi" type="time" id="hora-sal"></div>
+      <div class="fg"><label>Observación (opcional)</label><textarea class="fi" id="obs-sal" rows="2" placeholder="Novedad del turno..."></textarea></div>
+      <div class="btn-row">
+        <button class="btn btn-n" id="btn-sal" onclick="marcarSalida()" disabled>→ Registrar salida</button>
+        <button class="btn btn-o" onclick="limpSal()">Limpiar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ HISTÓRICO ══════ -->
+  <div id="page-historico" class="page">
+    <div class="card">
+      <div class="card-hdr">
+        <div class="card-title"><span class="dot"></span>Histórico de turnos</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-o btn-sm" onclick="exportCSV()">↓ CSV</button>
+          <button class="btn btn-n btn-sm" onclick="exportPDFHist()">↓ PDF</button>
+        </div>
+      </div>
+      <div class="filtros">
+        <label>Filtrar:</label>
+        <select class="fsel" id="filt-empresa-hist" onchange="renderHist()"><option value="">Todas las empresas</option></select>
+        <select class="fsel" id="filt-emp-hist" onchange="renderHist()"><option value="">Todos los empleados</option></select>
+        <select class="fsel" id="filt-mes-hist" onchange="renderHist()"><option value="">Todos los meses</option><option value="2026-03" selected>Marzo 2026</option></select>
+      </div>
       <div class="tbl-wrap">
-        <table>
-          <thead><tr><th>Empleado</th><th>Horas</th><th>Estado</th></tr></thead>
-          <tbody>
-            <tr><td>Alejandro Torres</td><td>208h</td><td><span class="badge b-green">OK</span></td></tr>
-            <tr><td>Sofía Villamil</td><td>196h</td><td><span class="badge b-warn">Extras</span></td></tr>
-            <tr><td>Mateo Holguín</td><td>200h</td><td><span class="badge b-purple">Noc.</span></td></tr>
-            <tr><td>Joaquín Lozano</td><td>231h</td><td><span class="badge b-red">Alerta</span></td></tr>
-            <tr><td>Sebastián Castro</td><td>168h</td><td><span class="badge b-green">OK</span></td></tr>
-            <tr><td>Isabella Ríos</td><td>150h</td><td><span class="badge b-green">OK</span></td></tr>
-          </tbody>
-        </table>
+        <div class="thdr" style="grid-template-columns:2fr 1fr 1.5fr .8fr .9fr .7fr"><span>Empleado</span><span>Fecha</span><span>Turno</span><span>Horas</span><span>Tipo</span><span>Puesto</span></div>
+        <div id="hist-rows"></div>
       </div>
+      <div style="padding:10px 12px;background:#f8fafc;border-radius:0 0 10px 10px;font-size:12px;font-weight:700;color:var(--navy);border-top:2px solid #e2e8f0;" id="hist-total-row"></div>
     </div>
   </div>
 
-  <div class="alert alert-warn">
-    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-    <span><strong>Alerta semana 2:</strong> Joaquín Lozano superó 42h semanales en semanas 1, 2 y 3. Total extras estimadas: 38.5h. Requiere aprobación de horas extras según CST Art. 162.</span>
-  </div>
-</div>
-
-<!-- REGISTRO -->
-<div class="view" id="view-registro">
-  <div class="card">
-    <div class="card-hdr"><div class="card-title"><span class="dot"></span>Registrar turno</div></div>
-    <div class="alert alert-ok" id="reg-alert" style="display:none"></div>
-    <div class="alert alert-err" id="reg-err" style="display:none"></div>
-
-    <div class="form-grid">
-      <div class="fg full">
-        <label>Número de cédula — el sistema valida automáticamente</label>
-        <input type="number" id="r-ced" placeholder="Ej: 1020304050" oninput="validarEmp(this.value)">
-        <div class="ep" id="r-ep">
-          <div class="ep-av" id="r-av">?</div>
-          <div style="flex:1">
-            <div class="ep-nm" id="r-nm">—</div>
-            <div class="ep-sb" id="r-sb">—</div>
-          </div>
-          <div id="r-status"></div>
-        </div>
-      </div>
-      <div class="fg">
-        <label>Fecha del turno</label>
-        <input type="date" id="r-fecha">
-      </div>
-      <div class="fg">
-        <label>ID Puesto (auto)</label>
-        <input type="text" id="r-puesto" readonly>
-      </div>
-      <div class="fg">
-        <label>Hora inicio</label>
-        <input type="time" id="r-ini">
-      </div>
-      <div class="fg">
-        <label>Hora fin</label>
-        <input type="time" id="r-fin">
-      </div>
-      <div class="fg full">
-        <label>Observación</label>
-        <textarea id="r-obs" rows="2" placeholder="Novedad del turno (opcional)"></textarea>
-      </div>
-    </div>
-
-    <div style="display:flex;gap:10px;margin-top:14px;">
-      <button class="btn btn-green" id="r-btn" onclick="registrarTurno()" disabled>
-        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-        Registrar turno
-      </button>
-      <button class="btn btn-outline" onclick="limpiarForm()">Limpiar</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-hdr"><div class="card-title"><span class="dot"></span>Validaciones activas</div></div>
-    <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;">
-      <div style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" fill="none" stroke="var(--green)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg> Empleado existe y está activo en la base de datos</div>
-      <div style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" fill="none" stroke="var(--green)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg> No permite registrar turno si empleado no existe o está inactivo</div>
-      <div style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" fill="none" stroke="var(--green)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg> Calcula automáticamente horas trabajadas y clasifica extras</div>
-      <div style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" fill="none" stroke="var(--warn)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 3C6.477 3 2 7.477 2 12s4.477 9 10 9 10-4.477 10-9S17.523 3 12 3z"/></svg> Alerta si semana supera 42h (CST Art. 161)</div>
-      <div style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" fill="none" stroke="var(--warn)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 3C6.477 3 2 7.477 2 12s4.477 9 10 9 10-4.477 10-9S17.523 3 12 3z"/></svg> Detecta turnos nocturnos, dominicales y festivos automáticamente</div>
-      <div style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" fill="none" stroke="var(--red)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg> Bloquea registros duplicados para la misma fecha y puesto</div>
-    </div>
-  </div>
-</div>
-
-<!-- TURNOS HISTORICO -->
-<div class="view" id="view-turnos">
-  <div class="card">
-    <div class="card-hdr">
-      <div class="card-title"><span class="dot"></span>Histórico de turnos — Marzo 2026</div>
-      <div style="display:flex;gap:8px;">
-        <select class="btn btn-outline" style="padding:6px 12px;font-size:12px;" onchange="filtrarTurnos(this.value)">
-          <option value="">Todos los empleados</option>
-          <option value="Alejandro Torres">Alejandro Torres</option>
-          <option value="Sofía Villamil">Sofía Villamil</option>
-          <option value="Mateo Holguín">Mateo Holguín</option>
-          <option value="Joaquín Lozano">Joaquín Lozano</option>
-        </select>
-      </div>
-    </div>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>#</th><th>Cédula</th><th>Empleado</th><th>Puesto</th><th>Cliente</th><th>Fecha</th><th>Inicio</th><th>Fin</th><th>Horas</th><th>Tipo</th></tr></thead>
-        <tbody id="turnos-body"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<!-- EMPLEADOS -->
-<div class="view" id="view-empleados">
-  <div class="metrics">
-    <div class="mc navy"><div class="mc-label">Total empleados</div><div class="mc-val navy">21</div><div class="mc-sub">En base de datos</div></div>
-    <div class="mc green"><div class="mc-label">Activos</div><div class="mc-val green">21</div><div class="mc-sub">Con turnos asignados</div></div>
-    <div class="mc warn"><div class="mc-label">Clientes</div><div class="mc-val warn">4</div><div class="mc-sub">Empresas cliente</div></div>
-    <div class="mc"><div class="mc-label">Puestos</div><div class="mc-val" style="color:var(--accent)">12</div><div class="mc-sub">IDs activos</div></div>
-  </div>
-  <div class="card">
-    <div class="card-hdr"><div class="card-title"><span class="dot"></span>Base de datos de empleados</div></div>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>Cédula</th><th>Nombre</th><th>Cargo</th><th>ID Puesto</th><th>Puesto</th><th>Cliente</th><th>Estado</th></tr></thead>
-        <tbody id="emp-body"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<!-- LIQUIDACION -->
-<div class="view" id="view-liquidacion">
-  <div class="card">
-    <div class="card-hdr">
-      <div class="card-title"><span class="dot"></span>Liquidación de nómina — IA SmartFlow</div>
-    </div>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;align-items:center;">
-      <select class="btn btn-outline" id="liq-emp" style="padding:8px 14px;font-size:13px;">
-        <option value="">Seleccionar empleado...</option>
-        <option value="1020304050">Alejandro Torres</option>
-        <option value="1032456789">Sofía Villamil</option>
-        <option value="1018273645">Mateo Holguín</option>
-        <option value="1025364758">Isabella Ríos</option>
-        <option value="1039404142">Joaquín Lozano</option>
-        <option value="1070809010">Sebastián Castro</option>
-      </select>
-      <select class="btn btn-outline" style="padding:8px 14px;font-size:13px;"><option>Marzo 2026</option></select>
-      <button class="btn btn-green" id="liq-btn" onclick="calcLiq()">
-        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-        Calcular
-      </button>
-    </div>
-    <div id="liq-out"><div style="text-align:center;padding:40px;color:#94a3b8;font-size:13px;">Selecciona un empleado para ver su liquidación</div></div>
-  </div>
-</div>
-
-<!-- GERENCIAL -->
-<div class="view" id="view-gerencial">
-  <div class="metrics">
-    <div class="mc navy"><div class="mc-label">Costo nómina total est.</div><div class="mc-val navy" style="font-size:20px;">$42.3M</div><div class="mc-sub">Marzo 2026</div></div>
-    <div class="mc warn"><div class="mc-label">Costo horas extras</div><div class="mc-val warn" style="font-size:20px;">$3.1M</div><div class="mc-sub">7.3% del total</div></div>
-    <div class="mc green"><div class="mc-label">Empleados liquidados</div><div class="mc-val green">6 / 21</div><div class="mc-sub">Con datos completos</div></div>
-    <div class="mc red"><div class="mc-label">Alertas CST</div><div class="mc-val red">3</div><div class="mc-sub">Requieren acción</div></div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+  <!-- ══════ EMPLEADOS ══════ -->
+  <div id="page-empleados" class="page">
     <div class="card">
-      <div class="card-hdr"><div class="card-title"><span class="dot"></span>Costo por empresa cliente</div></div>
-      <div id="ger-chart1"></div>
+      <div class="card-hdr">
+        <div class="card-title"><span class="dot"></span>Base de empleados · 21 registros</div>
+        <select class="fsel" id="filt-empresa-emp" onchange="renderEmps()"><option value="">Todas las empresas</option></select>
+      </div>
+      <div class="emp-grid" id="emp-grid"></div>
     </div>
+  </div>
+
+  <!-- ══════ LIQUIDACIÓN ══════ -->
+  <div id="page-liquidacion" class="page">
     <div class="card">
-      <div class="card-hdr"><div class="card-title"><span class="dot"></span>Distribución horas mes</div></div>
-      <div id="ger-chart2"></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-hdr">
-      <div class="card-title"><span class="dot"></span>Resumen ejecutivo por empleado — Marzo 2026</div>
-      <button class="btn btn-outline" onclick="document.getElementById('modal-bg').classList.add('show')" style="font-size:11px;">
-        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-        Exportar
-      </button>
-    </div>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>Empleado</th><th>Cargo</th><th>Cliente</th><th>H.Total</th><th>H.Extra</th><th>Sal.Base</th><th>Devengado</th><th>Deduc.</th><th>Neto</th><th>Estado</th></tr></thead>
-        <tbody id="ger-body"></tbody>
-      </table>
-    </div>
-    <div style="margin-top:14px;padding:12px;background:var(--light);border-radius:10px;font-size:11px;color:#64748b;">
-      <strong style="color:var(--navy)">Nota legal:</strong> Cálculos basados en CST Colombia · Jornada 42h/sem (Ley 2101/2021) · SMMLV 2026 $1.423.500 · Aportes Salud 4% / Pensión 4% empleado
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-hdr"><div class="card-title"><span class="dot"></span>Alertas de cumplimiento normativo</div></div>
-    <div style="display:flex;flex-direction:column;gap:10px;">
-      <div class="alert alert-err"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><span><strong>Joaquín Lozano (Escolta):</strong> Superó 42h/semana en 3 de 4 semanas. Horas extras: 38.5h. Requiere autorización y pago de recargos CST Art. 168.</span></div>
-      <div class="alert alert-warn"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><span><strong>Mateo Holguín (Vigilante):</strong> 80% de turnos nocturnos (22:00–06:00). Verificar recargo nocturno 35% aplicado correctamente.</span></div>
-      <div class="alert alert-warn"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><span><strong>Semana Santa (23–24 Mar):</strong> 4 empleados trabajaron festivos. Verificar pago dominical festivo 175% aplicado en liquidación.</span></div>
-    </div>
-  </div>
-</div>
-
-<!-- ALERTAS -->
-<div class="view" id="view-alertas">
-  <div class="card">
-    <div class="card-hdr"><div class="card-title"><span class="dot"></span>Centro de alertas — SmartFlow IA</div></div>
-    <div style="display:flex;flex-direction:column;gap:12px;">
-      <div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span style="font-size:12px;font-weight:800;color:var(--red);">CRÍTICO — Horas extra sin autorizar</span>
-          <span class="badge b-red">Pendiente</span>
+      <div class="card-hdr">
+        <div class="card-title"><span class="dot"></span>Liquidación · IA SmartFlow · CST Colombia</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-o btn-sm" id="btn-pdf-liq" onclick="exportPDFLiq()" disabled>↓ PDF Empleado</button>
+          <button class="btn btn-n btn-sm" onclick="exportPDFMes()">↓ PDF Total Mes</button>
         </div>
-        <p style="font-size:12px;color:#374151;line-height:1.6;">Joaquín Lozano acumula 38.5h extras en marzo. Máximo legal sin autorización: 12h/semana (CST Art. 167). Requiere aprobación escrita del empleador.</p>
-        <button class="btn btn-danger" style="margin-top:10px;font-size:11px;">Generar autorización</button>
       </div>
-      <div style="background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span style="font-size:12px;font-weight:800;color:#92400e;">ADVERTENCIA — Turnos festivos Semana Santa</span>
-          <span class="badge b-warn">Revisar</span>
-        </div>
-        <p style="font-size:12px;color:#374151;line-height:1.6;">4 empleados laboraron 23 y 24 de marzo (festivos). Verificar que el recargo dominical/festivo del 75% esté incluido en la liquidación de nómina.</p>
-        <button class="btn btn-outline" style="margin-top:10px;font-size:11px;border-color:var(--warn);color:#92400e;">Ver liquidación</button>
+      <!-- Selector modo -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button class="btn btn-g" id="modo-emp-btn" onclick="setModoLiq('empleado')">Por empleado</button>
+        <button class="btn btn-o" id="modo-mes-btn" onclick="setModoLiq('mes')">Total del mes</button>
       </div>
-      <div style="background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span style="font-size:12px;font-weight:800;color:#92400e;">ADVERTENCIA — Turnos nocturnos Mateo Holguín</span>
-          <span class="badge b-warn">Revisar</span>
+
+      <!-- Modo empleado -->
+      <div id="liq-modo-emp">
+        <div class="filtros">
+          <select class="fsel" id="sel-emp-liq" style="min-width:280px;">
+            <option value="">Seleccionar empleado...</option>
+          </select>
+          <select class="fsel" id="sel-mes-liq"><option value="2026-03">Marzo 2026</option><option value="2026-02">Febrero 2026</option><option value="2026-01">Enero 2026</option></select>
+          <button class="btn btn-n" onclick="calcularEmp()">⚡ Calcular con IA</button>
         </div>
-        <p style="font-size:12px;color:#374151;line-height:1.6;">80% de los turnos de Mateo Holguín son entre 22:00–06:00. Confirmar recargo nocturno 35% y verificar descanso mínimo entre turnos (CST Art. 166).</p>
-        <button class="btn btn-outline" style="margin-top:10px;font-size:11px;border-color:var(--warn);color:#92400e;">Ver turnos</button>
+        <div class="spin-row" id="spin-emp"><div class="spin"></div>SmartFlow IA calculando liquidación...</div>
+        <div id="liq-emp-result"><div style="text-align:center;padding:36px;color:#94a3b8;font-size:13px;">Selecciona un empleado y haz clic en "Calcular con IA"</div></div>
+      </div>
+
+      <!-- Modo mes completo -->
+      <div id="liq-modo-mes" style="display:none;">
+        <div class="filtros">
+          <select class="fsel" id="sel-mes-total"><option value="2026-03">Marzo 2026</option><option value="2026-02">Febrero 2026</option><option value="2026-01">Enero 2026</option></select>
+          <select class="fsel" id="sel-empresa-total"><option value="">Todas las empresas</option></select>
+          <button class="btn btn-n" onclick="calcularMes()">⚡ Calcular mes completo</button>
+        </div>
+        <div class="spin-row" id="spin-mes"><div class="spin"></div>Calculando liquidación de todos los empleados...</div>
+        <div id="liq-mes-result"><div style="text-align:center;padding:36px;color:#94a3b8;font-size:13px;">Haz clic en "Calcular mes completo" para ver el total a pagar.</div></div>
       </div>
     </div>
   </div>
-</div>
 
-</div><!-- end content -->
-</main>
-</div>
+  <!-- ══════ INFORME GERENCIAL ══════ -->
+  <div id="page-informe" class="page">
+    <div class="card">
+      <div class="card-hdr">
+        <div class="card-title"><span class="dot"></span>Informe Gerencial</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-o btn-sm" onclick="exportCSV()">↓ CSV</button>
+          <button class="btn btn-n btn-sm" onclick="exportPDFGerencial()">↓ PDF Gerencial</button>
+        </div>
+      </div>
+      <!-- Filtros -->
+      <div class="filtros">
+        <label>Segmentar:</label>
+        <select class="fsel" id="inf-empresa" onchange="renderInforme()"><option value="">Todas las empresas</option></select>
+        <select class="fsel" id="inf-emp" onchange="renderInforme()"><option value="">Todos los empleados</option></select>
+        <select class="fsel" id="inf-mes" onchange="renderInforme()"><option value="2026-03">Marzo 2026</option><option value="2026-02">Febrero 2026</option><option value="2026-01">Enero 2026</option></select>
+      </div>
+      <div id="informe-content"></div>
+    </div>
+  </div>
+
+  <!-- ══════ ALERTAS ══════ -->
+  <div id="page-alertas" class="page">
+    <div class="card">
+      <div class="card-hdr"><div class="card-title"><span class="dot dot-r"></span>Alertas del sistema · Incumplimientos normativos</div></div>
+      <div class="alert-item"><div class="al-dot" style="background:var(--red)"></div><div><div style="font-size:13px;font-weight:700;color:var(--navy)">Joaquín Lozano — Excede 12 horas continuas</div><div style="font-size:12px;color:#64748b;margin-top:3px">Turno del 09/03 registró 20 horas. Revisar CST Art. 167 · Cliente: Acme Corp · Cédula: 1039404142</div></div></div>
+      <div class="alert-item"><div class="al-dot" style="background:var(--warn)"></div><div><div style="font-size:13px;font-weight:700;color:var(--navy)">Valentina Mendoza — Horas extras acumuladas sobre límite</div><div style="font-size:12px;color:#64748b;margin-top:3px">38 horas extras en el mes. Límite recomendado: 24h/mes (2h/día · CST Art. 161) · Cédula: 1011121314</div></div></div>
+      <div class="alert-item"><div class="al-dot" style="background:var(--warn)"></div><div><div style="font-size:13px;font-weight:700;color:var(--navy)">Sebastián Castro — Dominical sin compensación registrada</div><div style="font-size:12px;color:#64748b;margin-top:3px">Turno del 24/03 (domingo) · Verificar recargo dominical 75% · CST Art. 179 · Cédula: 1070809010</div></div></div>
+    </div>
+  </div>
+
+  </div><!-- content -->
+</div><!-- main -->
 
 <script>
-const EMP_DB={
-  1020304050:{n:'Alejandro Torres',c:'Vigilante',p:'101VEW',lu:'Portería principal',cl:'Embajada de Winterfell',sal:1423500,activo:true},
-  1032456789:{n:'Sofía Villamil',c:'Vigilante',p:'101VEW',lu:'Portería principal',cl:'Embajada de Winterfell',sal:1423500,activo:true},
-  1018273645:{n:'Mateo Holguín',c:'Vigilante',p:'101VEW',lu:'Portería principal',cl:'Embajada de Winterfell',sal:1423500,activo:true},
-  1025364758:{n:'Isabella Ríos',c:'Recepcionista',p:'102REW',lu:'Recepción piso 2',cl:'Embajada de Winterfell',sal:1600000,activo:true},
-  1070809010:{n:'Sebastián Castro',c:'Vigilante',p:'101VAC',lu:'Parqueaderos',cl:'Acme Corp',sal:1423500,activo:true},
-  1011121314:{n:'Valentina Mendoza',c:'Vigilante',p:'101VAC',lu:'Parqueaderos',cl:'Acme Corp',sal:1423500,activo:true},
-  1015161718:{n:'Nicolás Duarte',c:'Vigilante',p:'101VAC',lu:'Parqueaderos',cl:'Acme Corp',sal:1423500,activo:true},
-  1019202122:{n:'Samuel Pardo',c:'Operador de medios',p:'102OMAC',lu:'Consola',cl:'Acme Corp',sal:1500000,activo:true},
-  1023242526:{n:'Daniel Ospina',c:'Operador de medios',p:'102OMAC',lu:'Consola',cl:'Acme Corp',sal:1500000,activo:true},
-  1027282930:{n:'Mariana Silva',c:'Operador de medios',p:'102OMAC',lu:'Consola',cl:'Acme Corp',sal:1500000,activo:true},
-  1031323334:{n:'Camila Rojas',c:'Vigilante',p:'103VAC',lu:'Oficinas 301',cl:'Acme Corp',sal:1423500,activo:true},
-  1035363738:{n:'Lucía Méndez',c:'Vigilante',p:'103VAC',lu:'Oficinas 401',cl:'Acme Corp',sal:1423500,activo:true},
-  1039404142:{n:'Joaquín Lozano',c:'Escolta',p:'104EAC',lu:'Presidencia',cl:'Acme Corp',sal:1800000,activo:true},
-  1043444546:{n:'Victoria Arango',c:'Vigilante',p:'101VCS',lu:'Piso 14',cl:'Cyberdyne Systems',sal:1423500,activo:true},
-  1047484950:{n:'Benjamín Cortés',c:'Vigilante',p:'101VCS',lu:'Piso 14',cl:'Cyberdyne Systems',sal:1423500,activo:true},
-  1051525354:{n:'Gabriela Serna',c:'Vigilante',p:'101VCS',lu:'Piso 14',cl:'Cyberdyne Systems',sal:1423500,activo:true},
-  1055565758:{n:'Emiliano Peña',c:'Vigilante',p:'102VCS',lu:'Piso 15',cl:'Cyberdyne Systems',sal:1423500,activo:true},
-  1059606162:{n:'Martina Suárez',c:'Vigilante',p:'103VCS',lu:'Piso 16',cl:'Cyberdyne Systems',sal:1423500,activo:true},
-  1063646566:{n:'Julián Beltrán',c:'Supervisor',p:'104SCS',lu:'Edificio',cl:'Cyberdyne Systems',sal:2000000,activo:true},
-  1067686970:{n:'Ricardo Vargas',c:'Escolta',p:'101EIS',lu:'Presidencia 1',cl:'Industrias Stark',sal:1800000,activo:true},
-  1071727374:{n:'Felipe Giraldo',c:'Escolta',p:'102EIS',lu:'Presidencia 2',cl:'Industrias Stark',sal:1800000,activo:true}
+/* ══════════════════════════════════════
+   BASE DE DATOS REAL — OMNITEMPUS S.A.S
+   ══════════════════════════════════════ */
+var DB = {
+  1020304050:{n:"Alejandro Torres",c:"Vigilante",p:"101VEW",lu:"Portería principal",cl:"Embajada de Winterfell",sal:1423500},
+  1032456789:{n:"Sofía Villamil",c:"Vigilante",p:"101VEW",lu:"Portería principal",cl:"Embajada de Winterfell",sal:1423500},
+  1018273645:{n:"Mateo Holguín",c:"Vigilante",p:"101VEW",lu:"Portería principal",cl:"Embajada de Winterfell",sal:1423500},
+  1025364758:{n:"Isabella Ríos",c:"Recepcionista",p:"102REW",lu:"Recepción piso 2",cl:"Embajada de Winterfell",sal:1600000},
+  1070809010:{n:"Sebastián Castro",c:"Vigilante",p:"101VAC",lu:"Parqueaderos",cl:"Acme Corp",sal:1423500},
+  1011121314:{n:"Valentina Mendoza",c:"Vigilante",p:"101VAC",lu:"Parqueaderos",cl:"Acme Corp",sal:1423500},
+  1015161718:{n:"Nicolás Duarte",c:"Vigilante",p:"101VAC",lu:"Parqueaderos",cl:"Acme Corp",sal:1423500},
+  1019202122:{n:"Samuel Pardo",c:"Operador de medios",p:"102OMAC",lu:"Consola",cl:"Acme Corp",sal:1500000},
+  1023242526:{n:"Daniel Ospina",c:"Operador de medios",p:"102OMAC",lu:"Consola",cl:"Acme Corp",sal:1500000},
+  1027282930:{n:"Mariana Silva",c:"Operador de medios",p:"102OMAC",lu:"Consola",cl:"Acme Corp",sal:1500000},
+  1031323334:{n:"Camila Rojas",c:"Vigilante",p:"103VAC",lu:"Oficinas 301",cl:"Acme Corp",sal:1423500},
+  1035363738:{n:"Lucía Méndez",c:"Vigilante",p:"103VAC",lu:"Oficinas 401",cl:"Acme Corp",sal:1423500},
+  1039404142:{n:"Joaquín Lozano",c:"Escolta",p:"104EAC",lu:"Presidencia",cl:"Acme Corp",sal:1800000},
+  1043444546:{n:"Victoria Arango",c:"Vigilante",p:"101VCS",lu:"Piso 14",cl:"Cyberdyne Systems",sal:1423500},
+  1047484950:{n:"Benjamín Cortés",c:"Vigilante",p:"101VCS",lu:"Piso 14",cl:"Cyberdyne Systems",sal:1423500},
+  1051525354:{n:"Gabriela Serna",c:"Vigilante",p:"101VCS",lu:"Piso 14",cl:"Cyberdyne Systems",sal:1423500},
+  1055565758:{n:"Emiliano Peña",c:"Vigilante",p:"102VCS",lu:"Piso 15",cl:"Cyberdyne Systems",sal:1423500},
+  1059606162:{n:"Martina Suárez",c:"Vigilante",p:"103VCS",lu:"Piso 16",cl:"Cyberdyne Systems",sal:1423500},
+  1063646566:{n:"Julián Beltrán",c:"Supervisor",p:"104SCS",lu:"Edificio",cl:"Cyberdyne Systems",sal:2000000},
+  1067686970:{n:"Ricardo Vargas",c:"Escolta",p:"101EIS",lu:"Presidencia 1",cl:"Industrias Stark",sal:1800000},
+  1071727374:{n:"Felipe Giraldo",c:"Escolta",p:"102EIS",lu:"Presidencia 2",cl:"Industrias Stark",sal:1800000}
 };
 
-const TURNOS_DB={
-  1020304050:[['2026-03-02','06:00','14:00'],['2026-03-03','06:00','14:00'],['2026-03-04','06:00','14:00'],['2026-03-05','06:00','14:00'],['2026-03-06','06:00','18:00'],['2026-03-08','06:00','18:00'],['2026-03-09','06:00','14:00'],['2026-03-10','06:00','14:00'],['2026-03-11','06:00','14:00'],['2026-03-12','06:00','14:00'],['2026-03-13','06:00','18:00'],['2026-03-15','06:00','18:00'],['2026-03-16','06:00','14:00'],['2026-03-17','06:00','14:00'],['2026-03-18','06:00','14:00'],['2026-03-19','06:00','14:00'],['2026-03-20','06:00','18:00'],['2026-03-22','06:00','18:00'],['2026-03-23','06:00','14:00'],['2026-03-24','06:00','14:00'],['2026-03-25','06:00','18:00'],['2026-03-26','06:00','14:00'],['2026-03-27','06:00','18:00'],['2026-03-29','06:00','18:00'],['2026-03-30','06:00','14:00'],['2026-03-31','06:00','14:00']],
-  1032456789:[['2026-03-02','14:00','22:00'],['2026-03-03','14:00','22:00'],['2026-03-04','14:00','22:00'],['2026-03-05','14:00','22:00'],['2026-03-06','18:00','06:00'],['2026-03-07','06:00','18:00'],['2026-03-09','14:00','22:00'],['2026-03-10','14:00','22:00'],['2026-03-11','14:00','22:00'],['2026-03-12','14:00','22:00'],['2026-03-13','18:00','06:00'],['2026-03-14','06:00','18:00'],['2026-03-16','14:00','22:00'],['2026-03-17','14:00','22:00'],['2026-03-18','14:00','22:00'],['2026-03-19','14:00','22:00'],['2026-03-20','18:00','06:00'],['2026-03-21','06:00','18:00'],['2026-03-23','14:00','22:00'],['2026-03-24','14:00','22:00'],['2026-03-25','18:00','06:00'],['2026-03-26','14:00','22:00'],['2026-03-27','18:00','06:00'],['2026-03-28','06:00','18:00'],['2026-03-30','14:00','22:00'],['2026-03-31','14:00','22:00']],
-  1039404142:[['2026-03-02','07:00','19:00'],['2026-03-03','07:00','19:00'],['2026-03-04','07:00','19:00'],['2026-03-05','05:30','14:00'],['2026-03-06','07:00','18:00'],['2026-03-07','07:00','16:00'],['2026-03-09','07:00','03:00'],['2026-03-11','07:00','19:00'],['2026-03-12','07:00','18:00'],['2026-03-13','07:00','18:00'],['2026-03-14','07:00','18:00'],['2026-03-16','07:00','19:00'],['2026-03-17','06:00','19:00'],['2026-03-18','05:00','14:00'],['2026-03-19','07:00','19:00'],['2026-03-20','07:00','21:00'],['2026-03-22','07:00','18:00'],['2026-03-23','07:00','18:00'],['2026-03-24','07:00','19:00'],['2026-03-25','07:00','19:00'],['2026-03-26','07:00','21:00'],['2026-03-27','07:00','01:00'],['2026-03-30','04:00','12:00'],['2026-03-31','05:30','16:00']]
+var TURNOS = {
+  1020304050:[["2026-03-02","06:00","14:00"],["2026-03-03","06:00","14:00"],["2026-03-04","06:00","14:00"],["2026-03-05","06:00","14:00"],["2026-03-06","06:00","18:00"],["2026-03-08","06:00","18:00"],["2026-03-09","06:00","14:00"],["2026-03-10","06:00","14:00"],["2026-03-11","06:00","14:00"],["2026-03-12","06:00","14:00"],["2026-03-13","06:00","18:00"],["2026-03-15","06:00","18:00"],["2026-03-16","06:00","14:00"],["2026-03-17","06:00","14:00"],["2026-03-18","06:00","14:00"],["2026-03-19","06:00","14:00"],["2026-03-20","06:00","18:00"],["2026-03-22","06:00","18:00"],["2026-03-23","06:00","14:00"],["2026-03-24","06:00","14:00"],["2026-03-25","06:00","18:00"],["2026-03-26","06:00","14:00"],["2026-03-27","06:00","18:00"],["2026-03-29","06:00","18:00"],["2026-03-30","06:00","14:00"],["2026-03-31","06:00","14:00"]],
+  1032456789:[["2026-03-02","14:00","22:00"],["2026-03-03","14:00","22:00"],["2026-03-04","14:00","22:00"],["2026-03-05","14:00","22:00"],["2026-03-06","18:00","06:00"],["2026-03-07","06:00","18:00"],["2026-03-09","14:00","22:00"],["2026-03-10","14:00","22:00"],["2026-03-11","14:00","22:00"],["2026-03-12","14:00","22:00"],["2026-03-13","18:00","06:00"],["2026-03-14","06:00","18:00"],["2026-03-16","14:00","22:00"],["2026-03-17","14:00","22:00"],["2026-03-18","14:00","22:00"],["2026-03-19","14:00","22:00"],["2026-03-20","18:00","06:00"],["2026-03-21","06:00","18:00"],["2026-03-23","14:00","22:00"],["2026-03-24","14:00","22:00"],["2026-03-25","18:00","06:00"],["2026-03-26","14:00","22:00"],["2026-03-27","18:00","06:00"],["2026-03-28","06:00","18:00"],["2026-03-30","14:00","22:00"],["2026-03-31","14:00","22:00"]],
+  1018273645:[["2026-03-01","22:00","06:00"],["2026-03-02","22:00","09:00"],["2026-03-03","22:00","06:00"],["2026-03-05","22:00","08:00"],["2026-03-06","22:00","06:00"],["2026-03-08","22:00","06:00"],["2026-03-09","22:00","09:00"],["2026-03-10","22:00","08:00"],["2026-03-12","22:00","06:00"],["2026-03-13","22:00","06:00"],["2026-03-15","22:00","08:00"],["2026-03-16","22:00","06:00"],["2026-03-17","22:00","06:00"],["2026-03-19","22:00","06:00"],["2026-03-20","22:00","06:00"],["2026-03-22","22:00","06:00"],["2026-03-23","22:00","06:00"],["2026-03-24","22:00","06:00"],["2026-03-26","22:00","06:00"],["2026-03-27","22:00","06:00"],["2026-03-29","22:00","06:00"],["2026-03-30","22:00","06:00"],["2026-03-31","22:00","06:00"]],
+  1025364758:[["2026-03-01","17:00","10:00"],["2026-03-02","17:00","07:00"],["2026-03-03","17:00","07:00"],["2026-03-04","17:00","07:00"],["2026-03-05","17:00","07:00"],["2026-03-08","17:00","07:00"],["2026-03-09","17:00","07:00"],["2026-03-10","17:00","07:00"],["2026-03-11","17:00","07:00"],["2026-03-12","17:00","07:00"],["2026-03-15","17:00","07:00"],["2026-03-16","17:00","07:00"],["2026-03-17","17:00","07:00"],["2026-03-18","17:00","07:00"],["2026-03-19","17:00","09:00"],["2026-03-22","17:00","07:00"],["2026-03-23","17:00","07:00"],["2026-03-24","17:00","07:00"],["2026-03-25","17:00","07:00"],["2026-03-26","17:00","07:00"],["2026-03-29","17:00","07:00"],["2026-03-30","17:00","07:00"],["2026-03-31","17:00","07:00"]],
+  1039404142:[["2026-03-02","07:00","19:00"],["2026-03-03","07:00","19:00"],["2026-03-04","07:00","19:00"],["2026-03-05","05:30","14:00"],["2026-03-06","07:00","18:00"],["2026-03-07","07:00","16:00"],["2026-03-09","07:00","03:00"],["2026-03-11","07:00","19:00"],["2026-03-12","07:00","18:00"],["2026-03-13","07:00","18:00"],["2026-03-14","07:00","18:00"],["2026-03-16","07:00","19:00"],["2026-03-17","06:00","19:00"],["2026-03-18","05:00","14:00"],["2026-03-19","07:00","19:00"],["2026-03-20","07:00","21:00"],["2026-03-22","07:00","18:00"],["2026-03-23","07:00","18:00"],["2026-03-24","07:00","19:00"],["2026-03-25","07:00","19:00"],["2026-03-26","07:00","21:00"],["2026-03-27","07:00","01:00"],["2026-03-30","04:00","12:00"],["2026-03-31","05:30","16:00"]],
+  1070809010:[["2026-03-01","06:00","18:00"],["2026-03-02","06:00","18:00"],["2026-03-03","06:00","18:00"],["2026-03-04","06:00","18:00"],["2026-03-07","06:00","20:00"],["2026-03-08","06:00","18:00"],["2026-03-09","06:00","18:00"],["2026-03-10","06:00","18:00"],["2026-03-11","06:00","18:00"],["2026-03-14","06:00","18:00"],["2026-03-15","06:00","18:00"],["2026-03-16","06:00","18:00"],["2026-03-17","06:00","18:00"],["2026-03-18","06:00","18:00"],["2026-03-21","06:00","20:00"],["2026-03-22","06:00","18:00"],["2026-03-23","06:00","18:00"],["2026-03-24","06:00","21:00"],["2026-03-25","06:00","18:00"],["2026-03-28","06:00","18:00"],["2026-03-29","06:00","18:00"],["2026-03-30","06:00","18:00"],["2026-03-31","06:00","20:00"]],
+  1011121314:[["2026-03-02","18:00","06:00"],["2026-03-03","18:00","06:00"],["2026-03-04","18:00","06:00"],["2026-03-05","18:00","06:00"],["2026-03-06","18:00","06:00"],["2026-03-09","18:00","06:00"],["2026-03-10","18:00","06:00"],["2026-03-11","18:00","06:00"],["2026-03-12","18:00","06:00"],["2026-03-13","18:00","08:00"],["2026-03-16","18:00","06:00"],["2026-03-17","18:00","06:00"],["2026-03-18","18:00","06:00"],["2026-03-19","18:00","06:00"],["2026-03-20","18:00","06:00"],["2026-03-23","18:00","06:00"],["2026-03-24","18:00","06:00"],["2026-03-25","18:00","06:00"],["2026-03-26","18:00","06:00"],["2026-03-27","18:00","06:00"],["2026-03-30","18:00","06:00"],["2026-03-31","18:00","06:00"]],
+  1015161718:[["2026-03-01","06:00","21:00"],["2026-03-02","06:00","18:00"],["2026-03-05","06:00","18:00"],["2026-03-06","06:00","18:00"],["2026-03-07","06:00","18:00"],["2026-03-08","06:00","21:00"],["2026-03-09","06:00","18:00"],["2026-03-12","06:00","18:00"],["2026-03-13","06:00","18:00"],["2026-03-14","06:00","21:00"],["2026-03-15","06:00","18:00"],["2026-03-16","06:00","18:00"],["2026-03-19","06:00","18:00"],["2026-03-20","06:00","18:00"],["2026-03-21","06:00","18:00"],["2026-03-22","06:00","18:00"],["2026-03-23","06:00","18:00"],["2026-03-26","06:00","18:00"],["2026-03-27","06:00","18:00"],["2026-03-28","06:00","18:00"],["2026-03-29","06:00","21:00"],["2026-03-30","06:00","18:00"]],
+  1031323334:[["2026-03-01","06:00","14:00"],["2026-03-03","06:00","14:00"],["2026-03-04","06:00","16:00"],["2026-03-06","06:00","17:00"],["2026-03-07","06:00","14:00"],["2026-03-08","06:00","14:00"],["2026-03-10","06:00","14:00"],["2026-03-11","06:00","17:00"],["2026-03-13","06:00","14:00"],["2026-03-14","06:00","14:00"],["2026-03-15","06:00","14:00"],["2026-03-17","06:00","14:00"],["2026-03-18","06:00","14:00"],["2026-03-20","06:00","14:00"],["2026-03-21","06:00","14:00"],["2026-03-22","06:00","14:00"],["2026-03-24","06:00","14:00"],["2026-03-25","06:00","14:00"],["2026-03-27","06:00","14:00"],["2026-03-28","06:00","14:00"],["2026-03-29","06:00","14:00"],["2026-03-31","06:00","14:00"]]
 };
 
-let turnosGuardados=[];
+// Histórico de turnos registrados en sesión
+var EA = {}, HN = [], UL_EMP = null, UL_MES = null;
+var MESES = {"2026-03":"Marzo 2026","2026-02":"Febrero 2026","2026-01":"Enero 2026"};
+var EMPRESAS = ["Embajada de Winterfell","Acme Corp","Cyberdyne Systems","Industrias Stark"];
 
-function horasEntre(i,f){const[h1,m1]=i.split(':').map(Number);const[h2,m2]=f.split(':').map(Number);let d=(h2*60+m2)-(h1*60+m1);if(d<0)d+=1440;return d/60;}
+/* ═══ UTILIDADES ═══ */
+function G(id){return document.getElementById(id);}
+function ini(n){return n.split(' ').map(function(x){return x[0];}).join('').slice(0,2).toUpperCase();}
+function hoy(){return new Date().toISOString().split('T')[0];}
+function hrs(i,f){var a=i.split(':'),b=f.split(':'),d=(+b[0]*60+ +b[1])-(+a[0]*60+ +a[1]);if(d<=0)d+=1440;return d/60;}
 function esDom(f){return new Date(f+'T12:00:00').getDay()===0;}
-function esFest(f){return['2026-03-23','2026-03-24'].includes(f);}
+function esFest(f){return['2026-03-23','2026-03-24','2026-04-02','2026-04-03'].indexOf(f)>=0;}
 function esNoc(h){return h<6||h>=19;}
 function fmt(n){return '$'+Math.round(n).toLocaleString('es-CO');}
-function fh(n){return n.toFixed(1)+'h';}
+function fh(n){return parseFloat(n).toFixed(1)+'h';}
+function showMsg(id,tipo,txt){var e=G(id);e.className='alrt '+tipo;e.textContent=txt;}
+function setBtn(id,en){var b=G(id);if(!b)return;b.disabled=!en;b.style.opacity=en?'1':'0.35';}
 
-function showView(id,btn){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
-  document.getElementById('view-'+id).classList.add('active');
-  if(btn)btn.classList.add('active');
-  const titles={dashboard:'Dashboard general',registro:'Registrar turno',turnos:'Histórico de turnos',empleados:'Base de empleados',liquidacion:'Liquidación IA',gerencial:'Informe gerencial',alertas:'Centro de alertas'};
-  document.getElementById('view-title').textContent=titles[id]||id;
-  if(id==='turnos')renderTurnos('');
-  if(id==='empleados')renderEmpleados();
-  if(id==='gerencial')renderGerencial();
-  if(id==='dashboard')renderDashCharts();
+/* ═══ NAVEGACIÓN ═══ */
+function goTo(nom,btn){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  var pg=G('page-'+nom);if(pg)pg.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(b){
+    b.classList.remove('active');
+    var ic=b.querySelector('.nav-icon');if(ic)ic.style.background='rgba(255,255,255,0.06)';
+  });
+  if(btn){btn.classList.add('active');var ic=btn.querySelector('.nav-icon');if(ic)ic.style.background='var(--green)';}
+  var t={dashboard:'Dashboard',registro:'Registrar turno',historico:'Histórico turnos',empleados:'Empleados',liquidacion:'Liquidación IA',informe:'Informe Gerencial',alertas:'Alertas'};
+  G('pg-title').textContent=t[nom]||nom;
 }
 
-function toast(msg){const t=document.getElementById('toast');document.getElementById('toast-msg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
-function closeModal(){document.getElementById('modal-bg').classList.remove('show');}
+/* ═══ CÁLCULO LIQUIDACIÓN (motor principal) ═══ */
+function getSem(f){var d=new Date(f+'T12:00:00'),day=d.getDay()||7;d.setDate(d.getDate()+4-day);var y=new Date(d.getFullYear(),0,1);return Math.ceil((((d-y)/86400000)+1)/7);}
 
-function validarEmp(val){
-  const id=parseInt(val);
-  const ep=document.getElementById('r-ep');
-  const btn=document.getElementById('r-btn');
-  const errEl=document.getElementById('reg-err');
-  errEl.style.display='none';
-  if(EMP_DB[id]){
-    const e=EMP_DB[id];
-    const ini=e.n.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
-    document.getElementById('r-av').textContent=ini;
-    document.getElementById('r-nm').textContent=e.n;
-    document.getElementById('r-sb').textContent=e.c+' · '+e.lu+' · '+e.cl;
-    document.getElementById('r-status').innerHTML=e.activo?'<span class="badge b-green">Activo</span>':'<span class="badge b-red">Inactivo</span>';
-    document.getElementById('r-puesto').value=e.p;
-    ep.classList.add('show');
-    btn.disabled=!e.activo;
-    if(!e.activo){errEl.textContent='Este empleado está inactivo. No puede registrar turnos.';errEl.style.display='flex';}
-  }else{
-    ep.classList.remove('show');
-    document.getElementById('r-puesto').value='';
-    btn.disabled=true;
-    if(val.length>6){errEl.textContent='Cédula no encontrada en la base de datos. Verifica el número.';errEl.style.display='flex';}
-  }
-}
-
-function registrarTurno(){
-  const ced=parseInt(document.getElementById('r-ced').value);
-  const f=document.getElementById('r-fecha').value;
-  const ini=document.getElementById('r-ini').value;
-  const fin=document.getElementById('r-fin').value;
-  const obs=document.getElementById('r-obs').value;
-  const alertOk=document.getElementById('reg-alert');
-  const alertErr=document.getElementById('reg-err');
-  alertOk.style.display='none';alertErr.style.display='none';
-
-  if(!f||!ini||!fin){alertErr.textContent='Completa fecha, hora inicio y hora fin.';alertErr.style.display='flex';return;}
-
-  const e=EMP_DB[ced];
-  const hrs=horasEntre(ini,fin);
-  const dom=esDom(f)||esFest(f);
-  const noc=esNoc(parseInt(ini.split(':')[0]));
-
-  // Detectar tipo
-  let tipo='Ordinaria';
-  let badge='b-green';
-  if(hrs>8){tipo='Extra';badge='b-warn';}
-  if(noc){tipo=(hrs>8?'Extra ':'')+'Nocturna';badge='b-purple';}
-  if(dom){tipo=(hrs>8?'Extra ':'')+'Dominical';badge='b-warn';}
-
-  // Alerta si excede horas
-  const alertaExtra=hrs>12;
-
-  turnosGuardados.unshift({ced,n:e.n,p:e.p,cl:e.cl,f,ini,fin,hrs,tipo,badge,obs,dom,noc});
-  document.getElementById('badge-reg').style.display='none';
-
-  alertOk.textContent=`✓ Turno registrado: ${e.n} · ${f} · ${ini}–${fin} · ${hrs.toFixed(1)}h ${tipo}${alertaExtra?' ⚠️ Supera 12h — revisar CST':''}`;
-  alertOk.style.display='flex';
-  toast(`Turno guardado: ${e.n} (${hrs.toFixed(1)}h)`);
-}
-
-function limpiarForm(){
-  document.getElementById('r-ced').value='';
-  document.getElementById('r-fecha').value='';
-  document.getElementById('r-ini').value='';
-  document.getElementById('r-fin').value='';
-  document.getElementById('r-obs').value='';
-  document.getElementById('r-ep').classList.remove('show');
-  document.getElementById('r-puesto').value='';
-  document.getElementById('r-btn').disabled=true;
-  document.getElementById('reg-alert').style.display='none';
-  document.getElementById('reg-err').style.display='none';
-}
-
-function renderTurnos(filtro){
-  const body=document.getElementById('turnos-body');
-  body.innerHTML='';
-  let filas=[];
-  Object.entries(TURNOS_DB).forEach(([ced,ts])=>{
-    const e=EMP_DB[ced];
-    ts.forEach(([f,ini,fin])=>{
-      if(!ini||!fin)return;
-      const hrs=horasEntre(ini,fin);
-      const dom=esDom(f)||esFest(f);
-      const noc=esNoc(parseInt(ini.split(':')[0]));
-      let tipo='Ordinaria',badge='b-green';
-      if(hrs>8){tipo='Extra';badge='b-warn';}
-      if(noc){tipo=(hrs>8?'Extra ':'')+'Nocturna';badge='b-purple';}
-      if(dom){tipo=(hrs>8?'Extra ':'')+'Dominical';badge='b-warn';}
-      filas.push({ced,n:e.n,p:e.p,cl:e.cl,f,ini,fin,hrs,tipo,badge});
+function calcLiq(ced, mesFiltro){
+  var e=DB[ced];
+  var ts=(TURNOS[ced]||[]).filter(function(t){
+    return !mesFiltro || t[0].slice(0,7)===mesFiltro;
+  });
+  var vh=e.sal/240,sems={},totH=0;
+  ts.forEach(function(t){if(!t[1]||!t[2])return;var sw=getSem(t[0]),h=hrs(t[1],t[2]);if(!sems[sw])sems[sw]={h:0,ts:[]};sems[sw].h+=h;sems[sw].ts.push({f:t[0],i:t[1],fi:t[2],h:h});totH+=h;});
+  var ord=0,ext=0,odN=0,ddD=0,ddN=0,edD=0,edN=0,edDd=0,edNd=0;
+  Object.values(sems).forEach(function(sw){
+    var ex=Math.max(0,sw.h-42);ord+=Math.min(sw.h,42);ext+=ex;var re=ex;
+    sw.ts.slice().reverse().forEach(function(t){
+      var dom=esDom(t.f)||esFest(t.f),h1=parseInt(t.i.split(':')[0]),noc=esNoc(h1);
+      var pE=re>0?Math.min(t.h,re)/t.h:0,pO=1-pE;re=Math.max(0,re-t.h);
+      if(!dom&&noc)odN+=t.h*pO;if(dom&&!noc)ddD+=t.h*pO;if(dom&&noc)ddN+=t.h*pO;
+      if(!dom&&!noc&&pE>0)edD+=t.h*pE;if(!dom&&noc&&pE>0)edN+=t.h*pE;
+      if(dom&&!noc&&pE>0)edDd+=t.h*pE;if(dom&&noc&&pE>0)edNd+=t.h*pE;
     });
   });
-  turnosGuardados.forEach(t=>filas.unshift({...t,badge:t.badge}));
-  if(filtro)filas=filas.filter(r=>r.n===filtro);
-  filas.slice(0,60).forEach((r,i)=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td style="color:#94a3b8">${i+1}</td><td style="font-family:monospace;font-size:11px">${r.ced}</td><td style="font-weight:600">${r.n}</td><td><span class="badge b-blue">${r.p}</span></td><td>${r.cl}</td><td>${r.f}</td><td>${r.ini}</td><td>${r.fin}</td><td style="font-weight:700">${r.hrs.toFixed(1)}h</td><td><span class="badge ${r.badge}">${r.tipo}</span></td>`;
-    body.appendChild(tr);
+  var odD=Math.max(0,ord-odN-ddD-ddN);
+  var vOD=odD*vh,vON=odN*vh*0.35,vDD=ddD*vh*0.75,vDN=ddN*vh*1.1;
+  var vED=edD*vh*0.25,vEN=edN*vh*0.75,vEDd=edDd*vh*1.05,vENd=edNd*vh*1.55;
+  var tE=vON+vDD+vDN+vED+vEN+vEDd+vENd,dev=e.sal+tE,sal=dev*0.04,pen=dev*0.04,ded=sal+pen,net=dev-ded;
+  return{e:e,ced:ced,totH:totH,ord:ord,ext:ext,odD:odD,odN:odN,ddD:ddD,ddN:ddN,edD:edD,edN:edN,edDd:edDd,edNd:edNd,vOD:vOD,vON:vON,vDD:vDD,vDN:vDN,vED:vED,vEN:vEN,vEDd:vEDd,vENd:vENd,tE:tE,dev:dev,sal:sal,pen:pen,ded:ded,net:net,vh:vh,nt:ts.length};
+}
+
+/* ═══ TOTAL MES — DASHBOARD ═══ */
+function calcularTotalMes(){
+  var totalNet=0,totalDev=0,totalDed=0,totalOrd=0,totalExt=0;
+  Object.keys(DB).forEach(function(ced){
+    if(!TURNOS[ced]||!TURNOS[ced].length)return;
+    var r=calcLiq(parseInt(ced),'2026-03');
+    totalNet+=r.net;totalDev+=r.dev;totalDed+=r.ded;totalOrd+=r.ord;totalExt+=r.ext;
+  });
+  G('tm-val').textContent=fmt(totalNet);
+  G('tm-dev').textContent=fmt(totalDev);
+  G('tm-ded').textContent=fmt(totalDed);
+  G('tm-hord').textContent=fh(totalOrd);
+  G('tm-hext').textContent=fh(totalExt);
+  G('tm-sub').textContent='Neto a pagar a '+Object.keys(TURNOS).length+' empleados con turnos registrados';
+  // Por empresa
+  var porEmpresa={};
+  Object.keys(DB).forEach(function(ced){
+    if(!TURNOS[ced]||!TURNOS[ced].length)return;
+    var e=DB[ced],r=calcLiq(parseInt(ced),'2026-03');
+    if(!porEmpresa[e.cl])porEmpresa[e.cl]={net:0,dev:0,emps:0,horas:0};
+    porEmpresa[e.cl].net+=r.net;porEmpresa[e.cl].dev+=r.dev;porEmpresa[e.cl].emps++;porEmpresa[e.cl].horas+=r.totH;
+  });
+  var dashEmp=G('dash-empresas');dashEmp.innerHTML='';
+  Object.entries(porEmpresa).forEach(function(entry){
+    var cl=entry[0],d=entry[1];
+    var div=document.createElement('div');div.className='empresa-card';
+    div.innerHTML='<div class="empresa-card-hdr"><div><div class="empresa-nombre">'+cl+'</div><div style="font-size:11px;color:#64748b;margin-top:2px">'+d.emps+' empleados · '+fh(d.horas)+' horas</div></div><div class="empresa-total">'+fmt(d.net)+'</div></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">'+
+    '<div style="background:#f8fafc;border-radius:8px;padding:8px;"><div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:2px;">Devengado</div><div style="font-size:13px;font-weight:800;color:var(--navy)">'+fmt(d.dev)+'</div></div>'+
+    '<div style="background:#f8fafc;border-radius:8px;padding:8px;"><div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:2px;">Neto a pagar</div><div style="font-size:13px;font-weight:800;color:var(--green)">'+fmt(d.net)+'</div></div>'+
+    '</div>';
+    dashEmp.appendChild(div);
   });
 }
 
-function filtrarTurnos(v){renderTurnos(v);}
-
-function renderEmpleados(){
-  const body=document.getElementById('emp-body');
-  body.innerHTML='';
-  Object.entries(EMP_DB).forEach(([ced,e])=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td style="font-family:monospace;font-size:11px">${ced}</td><td style="font-weight:600">${e.n}</td><td>${e.c}</td><td><span class="badge b-blue">${e.p}</span></td><td>${e.lu}</td><td>${e.cl}</td><td><span class="badge ${e.activo?'b-green':'b-red'}">${e.activo?'Activo':'Inactivo'}</span></td>`;
-    body.appendChild(tr);
+/* ═══ POBLAR FILTROS ═══ */
+function poblarFiltros(){
+  var empSels=['filt-empresa-hist','filt-empresa-emp','inf-empresa','sel-empresa-total'];
+  empSels.forEach(function(sid){
+    var s=G(sid);if(!s)return;
+    var first=s.options[0];s.innerHTML='';s.appendChild(first);
+    EMPRESAS.forEach(function(cl){var o=document.createElement('option');o.value=cl;o.textContent=cl;s.appendChild(o);});
+  });
+  var empLiq=G('sel-emp-liq');
+  Object.entries(DB).forEach(function(e){var o=document.createElement('option');o.value=e[0];o.textContent=e[0]+' — '+e[1].n;empLiq.appendChild(o);});
+  // Filtros de empleado para historico e informe
+  ['filt-emp-hist','inf-emp'].forEach(function(sid){
+    var s=G(sid);if(!s)return;
+    var first=s.options[0];s.innerHTML='';s.appendChild(first);
+    Object.entries(DB).forEach(function(e){var o=document.createElement('option');o.value=e[0];o.textContent=e[1].n;s.appendChild(o);});
   });
 }
 
-function calcLiq(){
-  const ced=parseInt(document.getElementById('liq-emp').value);
-  if(!ced){toast('Selecciona un empleado');return;}
-  const e=EMP_DB[ced];
-  const ts=TURNOS_DB[ced]||[];
-  const vh=e.sal/240;
-  let totH=0,ord=0,ext=0,odN=0,ddD=0,ddN=0,edD=0,edN=0,vExtra=0;
+/* ═══ HISTÓRICO ═══ */
+var HIST_BASE=[
+  {id:1020304050,n:"Alejandro Torres",p:"101VEW",cl:"Embajada de Winterfell",f:"2026-03-02",ei:"06:00",sf:"14:00",h:8,tipo:"Ordinaria",bxc:"bx-g",col:"var(--green)"},
+  {id:1032456789,n:"Sofía Villamil",p:"101VEW",cl:"Embajada de Winterfell",f:"2026-03-02",ei:"14:00",sf:"22:00",h:8,tipo:"Ordinaria",bxc:"bx-g",col:"var(--green)"},
+  {id:1018273645,n:"Mateo Holguín",p:"101VEW",cl:"Embajada de Winterfell",f:"2026-03-02",ei:"22:00",sf:"06:00",h:8,tipo:"Nocturna",bxc:"bx-p",col:"#7c3aed"},
+  {id:1039404142,n:"Joaquín Lozano",p:"104EAC",cl:"Acme Corp",f:"2026-03-09",ei:"07:00",sf:"03:00",h:20,tipo:"Extra",bxc:"bx-w",col:"var(--warn)"},
+  {id:1031323334,n:"Camila Rojas",p:"103VAC",cl:"Acme Corp",f:"2026-03-11",ei:"06:00",sf:"17:00",h:11,tipo:"Extra",bxc:"bx-w",col:"var(--warn)"},
+  {id:1011121314,n:"Valentina Mendoza",p:"101VAC",cl:"Acme Corp",f:"2026-03-13",ei:"18:00",sf:"08:00",h:14,tipo:"Extra noc.",bxc:"bx-r",col:"var(--red)"},
+  {id:1070809010,n:"Sebastián Castro",p:"101VAC",cl:"Acme Corp",f:"2026-03-21",ei:"06:00",sf:"20:00",h:14,tipo:"Extra",bxc:"bx-w",col:"var(--warn)"}
+];
 
-  function getSem(f){const d=new Date(f+'T12:00:00');const day=d.getDay()||7;d.setDate(d.getDate()+4-day);const y=new Date(d.getFullYear(),0,1);return Math.ceil((((d-y)/86400000)+1)/7);}
-  let sems={};
-  ts.forEach(([f,i,fi])=>{if(!i||!fi)return;const sw=getSem(f);if(!sems[sw])sems[sw]=0;sems[sw]+=horasEntre(i,fi);totH+=horasEntre(i,fi);});
-  Object.values(sems).forEach(h=>{const ex=Math.max(0,h-42);ext+=ex;ord+=Math.min(h,42);});
-
-  // Estimación por tipo
-  ts.forEach(([f,i,fi])=>{if(!i||!fi)return;const hrs=horasEntre(i,fi);const dom=esDom(f)||esFest(f);const h1=parseInt(i.split(':')[0]);const noc=h1<6||h1>=19;if(!dom&&noc)odN+=hrs*0.6;if(dom&&!noc)ddD+=hrs;if(dom&&noc)ddN+=hrs*0.4;});
-  vExtra=odN*vh*0.35+ddD*vh*0.75+ddN*vh*1.1+ext*vh*0.25;
-  const dev=e.sal+vExtra;
-  const ded=dev*0.08;
-  const net=dev-ded;
-  const ini=e.n.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
-
-  document.getElementById('liq-out').innerHTML=`
-  <div style="background:linear-gradient(135deg,var(--navy),var(--accent));color:white;border-radius:14px;padding:22px;margin-bottom:16px;">
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
-      <div style="width:48px;height:48px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--navy);flex-shrink:0;">${ini}</div>
-      <div>
-        <div style="font-size:18px;font-weight:800;">${e.n}</div>
-        <div style="font-size:12px;color:rgba(255,255,255,.7)">${e.c} · ${e.lu} · ${e.cl}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.5)">Cédula: ${ced} · SMMLV 2026: $1.423.500</div>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
-      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:9px;color:rgba(255,255,255,.6);text-transform:uppercase;margin-bottom:3px;">Total devengado</div><div style="font-size:20px;font-weight:800;color:var(--green);">${fmt(dev)}</div></div>
-      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:9px;color:rgba(255,255,255,.6);text-transform:uppercase;margin-bottom:3px;">Deducciones</div><div style="font-size:20px;font-weight:800;color:#f87171;">${fmt(ded)}</div></div>
-      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:9px;color:rgba(255,255,255,.6);text-transform:uppercase;margin-bottom:3px;">Neto a pagar</div><div style="font-size:22px;font-weight:800;color:white;">${fmt(net)}</div></div>
-    </div>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
-    <div class="mc navy"><div class="mc-label">Horas totales</div><div class="mc-val navy" style="font-size:22px;">${fh(totH)}</div></div>
-    <div class="mc green"><div class="mc-label">Ordinarias</div><div class="mc-val green" style="font-size:22px;">${fh(ord)}</div></div>
-    <div class="mc warn"><div class="mc-label">Horas extras</div><div class="mc-val warn" style="font-size:22px;">${fh(ext)}</div></div>
-    <div class="mc"><div class="mc-label">Turnos</div><div class="mc-val" style="font-size:22px;color:var(--accent)">${ts.filter(t=>t[1]).length}</div></div>
-  </div>
-  <div class="tbl-wrap">
-    <table>
-      <thead><tr><th>Concepto</th><th>Tipo</th><th>Base</th><th>Factor</th><th>Valor</th></tr></thead>
-      <tbody>
-        <tr><td>Salario base</td><td><span class="badge b-blue">Devengo</span></td><td>${fmt(e.sal)}</td><td>1.00</td><td style="font-weight:700">${fmt(e.sal)}</td></tr>
-        <tr><td>Recargo nocturno</td><td><span class="badge b-purple">Devengo</span></td><td>${fh(odN)}</td><td>+35%</td><td style="color:var(--green);font-weight:700">${fmt(odN*vh*0.35)}</td></tr>
-        <tr><td>Recargo dominical/festivo diurno</td><td><span class="badge b-warn">Devengo</span></td><td>${fh(ddD)}</td><td>+75%</td><td style="color:var(--green);font-weight:700">${fmt(ddD*vh*0.75)}</td></tr>
-        <tr><td>Recargo dominical/festivo nocturno</td><td><span class="badge b-warn">Devengo</span></td><td>${fh(ddN)}</td><td>+110%</td><td style="color:var(--green);font-weight:700">${fmt(ddN*vh*1.1)}</td></tr>
-        <tr style="background:rgba(245,158,11,.05)"><td><strong>Horas extras (sobre 42h/sem)</strong></td><td><span class="badge b-warn">Devengo</span></td><td>${fh(ext)}</td><td>+25%</td><td style="color:var(--warn);font-weight:700">${fmt(ext*vh*0.25)}</td></tr>
-        <tr><td><strong>Total devengado</strong></td><td></td><td></td><td></td><td style="font-weight:800;color:var(--navy)">${fmt(dev)}</td></tr>
-        <tr><td>Salud empleado (4%)</td><td><span class="badge b-red">Deducción</span></td><td></td><td>4%</td><td style="color:var(--red)">–${fmt(dev*0.04)}</td></tr>
-        <tr><td>Pensión empleado (4%)</td><td><span class="badge b-red">Deducción</span></td><td></td><td>4%</td><td style="color:var(--red)">–${fmt(dev*0.04)}</td></tr>
-      </tbody>
-      <tfoot><tr style="background:var(--navy)"><td colspan="4" style="color:white;font-weight:800;font-size:13px">NETO A PAGAR</td><td style="color:var(--green);font-weight:900;font-size:18px">${fmt(net)}</td></tr></tfoot>
-    </table>
-  </div>
-  <div style="margin-top:12px;padding:12px;background:var(--light);border-radius:10px;font-size:11px;color:#64748b;">
-    Normatividad: CST Art. 161 (42h/sem) · Art. 168 (noc. +35%) · Art. 179 (dom. +75%) · SMMLV 2026: $1.423.500
-  </div>`;
-}
-
-function renderGerencial(){
-  const GER_DATA=[
-    {ced:1020304050,h:208,ext:8,dev:1650000,ded:132000,net:1518000},
-    {ced:1032456789,h:196,ext:12,dev:1720000,ded:137600,net:1582400},
-    {ced:1018273645,h:200,ext:4,dev:1580000,ded:126400,net:1453600},
-    {ced:1025364758,h:150,ext:0,dev:1600000,ded:128000,net:1472000},
-    {ced:1039404142,h:231,ext:38.5,dev:2450000,ded:196000,net:2254000},
-    {ced:1070809010,h:168,ext:0,dev:1423500,ded:113880,net:1309620}
-  ];
-  const body=document.getElementById('ger-body');
-  body.innerHTML='';
-  GER_DATA.forEach(r=>{
-    const e=EMP_DB[r.ced];
-    const alerta=r.ext>12;
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td style="font-weight:600">${e.n}</td><td>${e.c}</td><td style="font-size:11px">${e.cl}</td><td>${r.h}h</td><td style="color:${alerta?'var(--red)':'var(--warn)'};font-weight:700">${r.ext}h</td><td>${fmt(e.sal)}</td><td style="font-weight:700">${fmt(r.dev)}</td><td style="color:var(--red)">–${fmt(r.ded)}</td><td style="font-weight:800;color:var(--navy)">${fmt(r.net)}</td><td><span class="badge ${alerta?'b-red':r.ext>0?'b-warn':'b-green'}">${alerta?'Alerta':r.ext>0?'Extras':'OK'}</span></td>`;
-    body.appendChild(tr);
+function renderHist(){
+  var fe=G('filt-empresa-hist').value, femp=G('filt-emp-hist').value, fmes=G('filt-mes-hist').value;
+  var todos=HN.concat(HIST_BASE);
+  var fil=todos.filter(function(r){
+    if(fe&&r.cl!==fe)return false;
+    if(femp&&String(r.id)!==femp)return false;
+    if(fmes&&r.f.slice(0,7)!==fmes)return false;
+    return true;
   });
-  // Charts gerenciales
-  document.getElementById('ger-chart1').innerHTML=`
-    <div class="chart-row"><div class="chart-label">Embajada de Winterfell</div><div class="chart-bar-wrap"><div class="chart-bar-fill" style="width:85%;background:var(--navy);">$4.5M</div></div></div>
-    <div class="chart-row"><div class="chart-label">Acme Corp</div><div class="chart-bar-wrap"><div class="chart-bar-fill" style="width:100%;background:var(--accent);">$5.3M</div></div></div>
-    <div class="chart-row"><div class="chart-label">Cyberdyne Systems</div><div class="chart-bar-wrap"><div class="chart-bar-fill" style="width:60%;background:var(--green);">$3.2M</div></div></div>
-    <div class="chart-row"><div class="chart-label">Industrias Stark</div><div class="chart-bar-wrap"><div class="chart-bar-fill" style="width:40%;background:#94a3b8;">$2.1M</div></div></div>`;
-  document.getElementById('ger-chart2').innerHTML=`
-    <div class="chart-row"><div class="chart-label">Ordinarias diurnas</div><div class="chart-bar-wrap"><div class="chart-bar-fill" style="width:78%;background:var(--green);">78%</div></div></div>
-    <div class="chart-row"><div class="chart-label">Nocturnas</div><div class="chart-bar-wrap"><div class="chart-bar-fill" style="width:45%;background:#7c3aed;">45%</div></div></div>
-    <div class="chart-row"><div class="chart-label">Dominicales/Festivas</div><div class="chart-bar-wrap"><div class="chart-bar-fill" style="width:25%;background:var(--warn);">25%</div></div></div>
-    <div class="chart-row"><div class="chart-label">Horas extras</div><div class="chart-bar-wrap"><div class="chart-bar-fill" style="width:18%;background:var(--red);">18%</div></div></div>`;
+  var cont=G('hist-rows');cont.innerHTML='';
+  var totH=0,totReg=fil.length;
+  fil.forEach(function(r){
+    var d=document.createElement('div');d.className='trow';
+    d.style.gridTemplateColumns='2fr 1fr 1.5fr .8fr .9fr .7fr';
+    d.innerHTML='<span style="font-weight:600">'+r.n+'</span><span>'+r.f.slice(5).split('-').reverse().join('/')+'</span><span>'+r.ei+'→'+r.sf+'</span><span style="color:'+r.col+';font-weight:700">'+fh(r.h)+'</span><span><span class="bx '+r.bxc+'">'+r.tipo+'</span></span><span style="color:#64748b;font-size:11px">'+r.p+'</span>';
+    cont.appendChild(d);totH+=r.h;
+  });
+  var tr=G('hist-total-row');
+  if(fil.length===0){cont.innerHTML='<div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">No hay registros para los filtros seleccionados.</div>';tr.textContent='';}
+  else{tr.innerHTML='<strong>Total: '+totReg+' turnos · '+fh(totH)+' horas trabajadas</strong>';}
 }
 
-function renderDashCharts(){
-  const el=document.getElementById('chart-empresas');
-  if(el)el.innerHTML=`
-    <div class="chart-row"><div class="chart-label" style="font-size:11px">Embajada Winterfell</div><div class="chart-bar-wrap"><div class="chart-bar-fill" style="width:85%;background:var(--navy);">604h</div></div></div>
-    <div class="chart-row"><div class="chart-label" style="font-size:11px">Acme Corp</div><div class="chart-bar-wrap"><div class="chart-bar-fill" style="width:100%;background:var(--accent);">720h</div></div></div>
-    <div class="chart-row"><div class="chart-label" style="font-size:11px">Cyberdyne Systems</div><div class="chart-bar-wrap"><div class="chart-bar-fill" style="width:60%;background:var(--green);">432h</div></div></div>
-    <div class="chart-row"><div class="chart-label" style="font-size:11px">Industrias Stark</div><div class="chart-bar-wrap"><div class="chart-bar-fill" style="width:35%;background:#94a3b8;">252h</div></div></div>`;
+/* ═══ EMPLEADOS GRID ═══ */
+function renderEmps(){
+  var fe=G('filt-empresa-emp')?G('filt-empresa-emp').value:'';
+  var grid=G('emp-grid');grid.innerHTML='';
+  Object.entries(DB).forEach(function(entry){
+    var id=entry[0],emp=entry[1];
+    if(fe&&emp.cl!==fe)return;
+    var div=document.createElement('div');div.className='emp-item';
+    div.innerHTML='<div class="emp-av">'+ini(emp.n)+'</div><div><div style="font-size:13px;font-weight:700;color:var(--navy)">'+emp.n+'</div><div style="font-size:11px;color:#64748b">'+emp.c+' · '+emp.cl+'</div><span class="emp-p">'+emp.p+'</span></div>';
+    grid.appendChild(div);
+  });
 }
 
-function exportar(tipo){
-  closeModal();
-  const msgs={pdf:'PDF gerencial generado — listo para imprimir',excel:'CSV exportado — listo para Google Sheets',desprendible:'Desprendibles individuales generados',gerencial:'Dashboard gerencial exportado'};
-  toast(msgs[tipo]||'Exportado correctamente');
-  if(tipo==='pdf'||tipo==='gerencial')setTimeout(()=>window.print(),500);
+/* ═══ REGISTRO TURNOS ═══ */
+function buscarEnt(){
+  var id=parseInt(G('ced-ent').value);
+  G('ec-ent').classList.remove('show');G('puesto-ent').value='';setBtn('btn-ent',false);G('msg-ent').className='alrt';
+  if(!id||!DB[id]){if(String(G('ced-ent').value).length>5)showMsg('msg-ent','er','Cédula no encontrada en la base de datos.');return;}
+  if(EA[id]){showMsg('msg-ent','wn','Entrada activa. Debe registrar la salida primero.');return;}
+  var e=DB[id];
+  G('ea-ent').textContent=ini(e.n);G('en-ent').textContent=e.n;G('es-ent').textContent=e.c+' · '+e.lu+' · '+e.cl;
+  G('puesto-ent').value=e.p;G('ec-ent').classList.add('show');setBtn('btn-ent',true);
+}
+function marcarEntrada(){
+  var id=parseInt(G('ced-ent').value),f=G('fecha-ent').value,h=G('hora-ent').value;
+  if(!f){showMsg('msg-ent','er','Ingresa la fecha.');return;}
+  if(!h){showMsg('msg-ent','er','Ingresa la hora de entrada.');return;}
+  var ahora=new Date(),eDT=new Date(f+'T'+h+':00');
+  if(eDT>ahora){showMsg('msg-ent','er','La hora no puede ser posterior a la hora actual ('+ahora.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})+').');return;}
+  EA[id]={f:f,h:h,p:DB[id].p};
+  showMsg('msg-ent','ok','✓ Entrada: '+DB[id].n+' · '+f+' · '+h+'. Esperando salida.');
+  setBtn('btn-ent',false);G('ec-ent').classList.remove('show');G('ced-ent').value='';G('puesto-ent').value='';G('hora-ent').value='';
+  actualizarDash();
+}
+function limpEnt(){G('ced-ent').value='';G('fecha-ent').value=hoy();G('hora-ent').value='';G('puesto-ent').value='';G('ec-ent').classList.remove('show');setBtn('btn-ent',false);G('msg-ent').className='alrt';}
+
+function buscarSal(){
+  var id=parseInt(G('ced-sal').value);
+  G('ec-sal').classList.remove('show');G('ea-box').classList.remove('show');setBtn('btn-sal',false);G('msg-sal').className='alrt';
+  if(!id||!DB[id]){if(String(G('ced-sal').value).length>5)showMsg('msg-sal','er','Cédula no encontrada.');return;}
+  var e=DB[id];G('ea-sal').textContent=ini(e.n);G('en-sal').textContent=e.n;G('es-sal').textContent=e.c+' · '+e.lu+' · '+e.cl;G('ec-sal').classList.add('show');
+  if(EA[id]){G('ea-txt').textContent='Entrada del '+EA[id].f+' a las '+EA[id].h+' — puesto '+EA[id].p;G('ea-box').classList.add('show');setBtn('btn-sal',true);}
+  else{showMsg('msg-sal','er','No hay entrada activa. Marque entrada primero.');}
+}
+function marcarSalida(){
+  var id=parseInt(G('ced-sal').value),hSal=G('hora-sal').value,obs=G('obs-sal').value;
+  if(!hSal){showMsg('msg-sal','er','Ingresa la hora de salida.');return;}
+  if(!EA[id]){showMsg('msg-sal','er','No hay entrada activa.');return;}
+  var ent=EA[id],hE=parseInt(ent.h.split(':')[0]),mE=parseInt(ent.h.split(':')[1]),hS=parseInt(hSal.split(':')[0]),mS=parseInt(hSal.split(':')[1]);
+  if(hE*60+mE===hS*60+mS){showMsg('msg-sal','er','La salida no puede ser igual a la entrada.');return;}
+  var h=hrs(ent.h,hSal);
+  if(h<0.1){showMsg('msg-sal','er','El turno resulta en menos de 6 minutos.');return;}
+  var e=DB[id],dom=esDom(ent.f)||esFest(ent.f),h1=parseInt(ent.h.split(':')[0]),noc=esNoc(h1);
+  var tipo='Ordinaria',bxc='bx-g',col='var(--green)';
+  if(h>8&&!dom&&!noc){tipo='Con extras';bxc='bx-w';col='var(--warn)';}
+  if(noc&&h<=8){tipo='Nocturna';bxc='bx-p';col='#7c3aed';}
+  if(noc&&h>8){tipo='Extra noc.';bxc='bx-r';col='var(--red)';}
+  if(dom&&h<=8){tipo='Dominical';bxc='bx-w';col='var(--warn)';}
+  if(dom&&h>8){tipo='Extra dom.';bxc='bx-r';col='var(--red)';}
+  var reg={id:id,n:e.n,p:e.p,cl:e.cl,f:ent.f,ei:ent.h,sf:hSal,h:h,tipo:tipo,bxc:bxc,col:col,obs:obs};
+  HN.unshift(reg);delete EA[id];
+  showMsg('msg-sal','ok','✓ Turno completo: '+e.n+' · '+fh(h)+(h>12?' ⚠️ +12h':''));
+  var row=document.createElement('div');row.className='trow';
+  row.style.gridTemplateColumns='2fr 1fr 1.5fr .8fr .9fr .7fr';
+  row.innerHTML='<span style="font-weight:600">'+e.n+'</span><span>'+ent.f.slice(5).split('-').reverse().join('/')+'</span><span>'+ent.h+'→'+hSal+'</span><span style="color:'+col+';font-weight:700">'+fh(h)+'</span><span><span class="bx '+bxc+'">'+tipo+'</span></span><span style="color:#64748b;font-size:11px">'+e.p+'</span>';
+  var hr=G('hist-rows');if(hr)hr.prepend(row);
+  var dv=document.createElement('div');dv.className='turno-vivo';
+  dv.innerHTML='<div class="tv-av">'+ini(e.n)+'</div><div style="flex:1"><div style="font-size:12px;font-weight:700">'+e.n+'</div><div style="font-size:11px;color:#64748b">'+ent.f+' · '+ent.h+'→'+hSal+' · '+fh(h)+'</div></div><span class="bx '+bxc+'">'+tipo+'</span>';
+  G('dash-ultimos').prepend(dv);actualizarDash();limpSal();
+}
+function limpSal(){G('ced-sal').value='';G('hora-sal').value='';G('obs-sal').value='';G('ec-sal').classList.remove('show');G('ea-box').classList.remove('show');setBtn('btn-sal',false);G('msg-sal').className='alrt';}
+function actualizarDash(){
+  var cnt=Object.keys(EA).length;G('stat-activos').textContent=cnt;G('badge-activos').textContent=cnt;
+  var dash=G('dash-activos');
+  if(cnt===0){dash.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No hay entradas activas.</p>';return;}
+  dash.innerHTML='';
+  Object.entries(EA).forEach(function(e){var id=e[0],ent=e[1],emp=DB[id];if(!emp)return;var d=document.createElement('div');d.className='turno-vivo';d.innerHTML='<div class="tv-av">'+ini(emp.n)+'</div><div style="flex:1"><div style="font-size:12px;font-weight:700">'+emp.n+'</div><div style="font-size:11px;color:#64748b">'+ent.f+' · '+ent.h+' · '+emp.p+'</div></div><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(151,201,62,0.15);color:#166534;">EN TURNO</span>';dash.appendChild(d);});
 }
 
-// Init
-document.getElementById('r-fecha').value=new Date().toISOString().split('T')[0];
-renderDashCharts();
+/* ═══ MODO LIQUIDACIÓN ═══ */
+function setModoLiq(modo){
+  G('liq-modo-emp').style.display=modo==='empleado'?'block':'none';
+  G('liq-modo-mes').style.display=modo==='mes'?'block':'none';
+  G('modo-emp-btn').className='btn '+(modo==='empleado'?'btn-g':'btn-o');
+  G('modo-mes-btn').className='btn '+(modo==='mes'?'btn-n':'btn-o');
+}
+
+/* ═══ LIQUIDACIÓN POR EMPLEADO ═══ */
+function calcularEmp(){
+  var ced=parseInt(G('sel-emp-liq').value),mes=G('sel-mes-liq').value;
+  if(!ced){alert('Selecciona un empleado.');return;}
+  G('spin-emp').classList.add('on');setBtn('btn-pdf-liq',false);G('liq-emp-result').innerHTML='';
+  var r=calcLiq(ced,mes);UL_EMP=r;
+  if(!r.totH){G('spin-emp').classList.remove('on');G('liq-emp-result').innerHTML='<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">No hay turnos registrados para este empleado en '+MESES[mes]+'.</div>';return;}
+  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,
+      messages:[{role:'user',content:'Nómina CST Colombia real. '+r.e.n+' ('+r.e.c+'). '+MESES[mes]+'. '+fh(r.totH)+' horas, '+fh(r.ext)+' extras. Devengado: '+fmt(r.dev)+'. Neto: '+fmt(r.net)+'. 3 líneas: 1) Situación laboral, 2) Alerta CST si aplica, 3) Recomendación gerencia.'}]})
+  }).then(function(x){return x.json();}).then(function(d){
+    var t=d.content?d.content.map(function(c){return c.text||'';}).join(''):'Análisis no disponible.';
+    G('spin-emp').classList.remove('on');renderLiqEmp(r,t,mes);setBtn('btn-pdf-liq',true);
+  }).catch(function(){G('spin-emp').classList.remove('on');renderLiqEmp(r,'Análisis IA no disponible.',mes);setBtn('btn-pdf-liq',true);});
+}
+
+function renderLiqEmp(r,ai,mes){
+  var bx=function(st,t){return '<span style="display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;'+st+'">'+t+'</span>';};
+  G('liq-emp-result').innerHTML=
+    '<div class="liq-hdr">'+
+      '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">'+
+        '<div style="width:44px;height:44px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--navy);flex-shrink:0">'+ini(r.e.n)+'</div>'+
+        '<div><div style="font-size:16px;font-weight:800">'+r.e.n+'</div>'+
+        '<div style="font-size:11px;color:rgba(255,255,255,.7)">'+r.e.c+' · '+r.e.lu+' · '+r.e.cl+'</div>'+
+        '<div style="font-size:10px;color:rgba(255,255,255,.5)">Cédula: '+r.ced+' · '+MESES[mes]+' · SMMLV $1.423.500</div></div></div>'+
+      '<div class="ltots">'+
+        '<div class="lt"><div class="lt-l">Salario base</div><div class="lt-v">'+fmt(r.e.sal)+'</div></div>'+
+        '<div class="lt"><div class="lt-l">Total devengado</div><div class="lt-v" style="color:var(--green)">'+fmt(r.dev)+'</div></div>'+
+        '<div class="lt"><div class="lt-l">Deducciones</div><div class="lt-v" style="color:#f87171">'+fmt(r.ded)+'</div></div>'+
+        '<div class="lt"><div class="lt-l">NETO A PAGAR</div><div class="lt-v" style="font-size:20px;color:var(--green)">'+fmt(r.net)+'</div></div>'+
+      '</div></div>'+
+    '<div class="mtr">'+
+      '<div class="mc"><div class="mc-l">Horas totales</div><div class="mc-v" style="color:var(--navy)">'+fh(r.totH)+'</div></div>'+
+      '<div class="mc"><div class="mc-l">Ordinarias</div><div class="mc-v" style="color:var(--green)">'+fh(r.ord)+'</div></div>'+
+      '<div class="mc"><div class="mc-l">Horas extras</div><div class="mc-v" style="color:var(--warn)">'+fh(r.ext)+'</div></div>'+
+      '<div class="mc"><div class="mc-l">Recargos</div><div class="mc-v" style="color:var(--accent)">'+fmt(r.tE)+'</div></div>'+
+      '<div class="mc"><div class="mc-l">Turnos</div><div class="mc-v" style="color:var(--navy)">'+r.nt+'</div></div>'+
+    '</div>'+
+    '<div class="tw"><table><thead><tr><th>Tipo de hora</th><th>Horas</th><th>Factor</th><th>Valor/hora</th><th>Subtotal</th></tr></thead><tbody>'+
+      '<tr><td>Ordinaria diurna</td><td>'+fh(r.odD)+'</td><td>1.00</td><td>'+fmt(r.vh)+'</td><td>'+fmt(r.vOD)+'</td></tr>'+
+      '<tr><td>Nocturna '+bx('background:rgba(124,58,237,0.1);color:#6d28d9','+35%')+'</td><td>'+fh(r.odN)+'</td><td>1.35</td><td>'+fmt(r.vh*1.35)+'</td><td style="color:#7c3aed;font-weight:700">'+fmt(r.vON)+'</td></tr>'+
+      '<tr><td>Dominical diurna '+bx('background:rgba(245,158,11,0.15);color:#92400e','+75%')+'</td><td>'+fh(r.ddD)+'</td><td>1.75</td><td>'+fmt(r.vh*1.75)+'</td><td style="color:var(--warn);font-weight:700">'+fmt(r.vDD)+'</td></tr>'+
+      '<tr><td>Dominical nocturna</td><td>'+fh(r.ddN)+'</td><td>2.10</td><td>'+fmt(r.vh*2.10)+'</td><td style="color:var(--warn);font-weight:700">'+fmt(r.vDN)+'</td></tr>'+
+      '<tr><td>Extra diurna '+bx('background:rgba(245,158,11,0.15);color:#92400e','+25%')+'</td><td>'+fh(r.edD)+'</td><td>1.25</td><td>'+fmt(r.vh*1.25)+'</td><td style="color:var(--warn);font-weight:700">'+fmt(r.vED)+'</td></tr>'+
+      '<tr><td>Extra nocturna '+bx('background:rgba(245,158,11,0.15);color:#92400e','+75%')+'</td><td>'+fh(r.edN)+'</td><td>1.75</td><td>'+fmt(r.vh*1.75)+'</td><td style="color:var(--warn);font-weight:700">'+fmt(r.vEN)+'</td></tr>'+
+      '<tr><td>Extra dominical diurna</td><td>'+fh(r.edDd)+'</td><td>2.05</td><td>'+fmt(r.vh*2.05)+'</td><td style="color:var(--warn);font-weight:700">'+fmt(r.vEDd)+'</td></tr>'+
+      '<tr><td>Extra dominical nocturna</td><td>'+fh(r.edNd)+'</td><td>2.55</td><td>'+fmt(r.vh*2.55)+'</td><td style="color:var(--warn);font-weight:700">'+fmt(r.vENd)+'</td></tr>'+
+    '</tbody></table></div>'+
+    '<div class="tw"><table><thead><tr><th>Concepto</th><th>Tipo</th><th>Valor</th></tr></thead><tbody>'+
+      '<tr><td>Salario base</td><td>'+bx('background:rgba(16,48,74,0.1);color:var(--navy)','Devengo')+'</td><td style="font-weight:700">'+fmt(r.e.sal)+'</td></tr>'+
+      '<tr><td>Recargos y horas extras</td><td>'+bx('background:rgba(151,201,62,0.15);color:#166534','Devengo')+'</td><td style="color:var(--green);font-weight:700">+'+fmt(r.tE)+'</td></tr>'+
+      '<tr><td><strong>Total devengado</strong></td><td></td><td style="font-weight:800;color:var(--navy)">'+fmt(r.dev)+'</td></tr>'+
+      '<tr><td>Salud empleado (4%)</td><td>'+bx('background:rgba(239,68,68,0.15);color:#991b1b','Deducción')+'</td><td style="color:var(--red)">–'+fmt(r.sal)+'</td></tr>'+
+      '<tr><td>Pensión empleado (4%)</td><td>'+bx('background:rgba(239,68,68,0.15);color:#991b1b','Deducción')+'</td><td style="color:var(--red)">–'+fmt(r.pen)+'</td></tr>'+
+    '</tbody><tfoot><tr><td colspan="2">NETO A PAGAR — '+r.e.n+'</td><td class="neto">'+fmt(r.net)+'</td></tr></tfoot></table></div>'+
+    '<div class="ai-box"><div class="ai-lbl">⚡ Análisis IA SmartFlow</div><p style="font-size:13px;color:#374151;line-height:1.7">'+ai+'</p></div>'+
+    '<div class="norma">CST Art.161 (42h/sem·Ley 2101/2021) · Art.168 (noc.+35%) · Art.179 (dom.+75%) · Art.180 (extra +25%/+75%) · SMMLV 2026: $1.423.500</div>';
+}
+
+/* ═══ LIQUIDACIÓN TOTAL MES ═══ */
+function calcularMes(){
+  var mes=G('sel-mes-total').value,empresa=G('sel-empresa-total').value;
+  G('spin-mes').classList.add('on');G('liq-mes-result').innerHTML='';
+  setTimeout(function(){
+    var empleados=Object.keys(DB).filter(function(ced){
+      if(empresa&&DB[ced].cl!==empresa)return false;
+      return TURNOS[ced]&&TURNOS[ced].filter(function(t){return t[0].slice(0,7)===mes;}).length>0;
+    });
+    var resultados=empleados.map(function(ced){return calcLiq(parseInt(ced),mes);});
+    UL_MES={mes:mes,empresa:empresa,resultados:resultados};
+    // Totales globales
+    var totNet=0,totDev=0,totDed=0,totH=0,totExt=0;
+    resultados.forEach(function(r){totNet+=r.net;totDev+=r.dev;totDed+=r.ded;totH+=r.totH;totExt+=r.ext;});
+    // Por empresa
+    var porEmp={};
+    resultados.forEach(function(r){var cl=r.e.cl;if(!porEmp[cl])porEmp[cl]={net:0,dev:0,ded:0,emps:[]};porEmp[cl].net+=r.net;porEmp[cl].dev+=r.dev;porEmp[cl].ded+=r.ded;porEmp[cl].emps.push(r);});
+    var html='<div style="background:linear-gradient(135deg,var(--navy),var(--accent));color:white;border-radius:14px;padding:20px;margin-bottom:16px;">'+
+      '<div style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:6px;">Total nómina a pagar · '+MESES[mes]+(empresa?' · '+empresa:'')+'</div>'+
+      '<div style="font-size:38px;font-weight:900;color:var(--green)">'+fmt(totNet)+'</div>'+
+      '<div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:4px;">'+resultados.length+' empleados con turnos registrados</div>'+
+      '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;">'+
+      '<div style="background:rgba(255,255,255,.1);border-radius:9px;padding:10px;text-align:center;"><div style="font-size:9px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:2px;">Devengado bruto</div><div style="font-size:15px;font-weight:800">'+fmt(totDev)+'</div></div>'+
+      '<div style="background:rgba(255,255,255,.1);border-radius:9px;padding:10px;text-align:center;"><div style="font-size:9px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:2px;">Deducciones</div><div style="font-size:15px;font-weight:800;color:#f87171">'+fmt(totDed)+'</div></div>'+
+      '<div style="background:rgba(255,255,255,.1);border-radius:9px;padding:10px;text-align:center;"><div style="font-size:9px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:2px;">Horas ordinarias</div><div style="font-size:15px;font-weight:800">'+fh(totH-totExt)+'</div></div>'+
+      '<div style="background:rgba(255,255,255,.1);border-radius:9px;padding:10px;text-align:center;"><div style="font-size:9px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:2px;">Horas extras</div><div style="font-size:15px;font-weight:800;color:var(--warn)">'+fh(totExt)+'</div></div>'+
+      '</div></div>';
+    // Por empresa
+    if(!empresa){
+      html+='<div style="font-size:13px;font-weight:800;color:var(--navy);margin-bottom:10px;">Desglose por empresa</div>';
+      Object.entries(porEmp).forEach(function(e){var cl=e[0],d=e[1];
+        html+='<div class="empresa-card"><div class="empresa-card-hdr"><div><div class="empresa-nombre">'+cl+'</div><div style="font-size:11px;color:#64748b">'+d.emps.length+' empleados</div></div><div class="empresa-total">'+fmt(d.net)+'</div></div>'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div style="background:#f8fafc;border-radius:8px;padding:8px;"><div style="font-size:10px;font-weight:700;color:#64748b;margin-bottom:2px;">Devengado</div><div style="font-size:13px;font-weight:800;color:var(--navy)">'+fmt(d.dev)+'</div></div><div style="background:#f8fafc;border-radius:8px;padding:8px;"><div style="font-size:10px;font-weight:700;color:#64748b;margin-bottom:2px;">Deducciones</div><div style="font-size:13px;font-weight:800;color:var(--red)">'+fmt(d.ded)+'</div></div></div></div>';
+      });
+    }
+    // Tabla resumen por empleado
+    html+='<div class="tw" style="margin-top:16px;"><table><thead><tr><th>Empleado</th><th>Cargo</th><th>Empresa</th><th>H. Totales</th><th>H. Extras</th><th>Devengado</th><th>Deducciones</th><th style="color:var(--green)">Neto a pagar</th></tr></thead><tbody>';
+    resultados.forEach(function(r){
+      html+='<tr><td style="font-weight:700">'+r.e.n+'</td><td>'+r.e.c+'</td><td>'+r.e.cl+'</td><td>'+fh(r.totH)+'</td><td style="color:var(--warn)">'+fh(r.ext)+'</td><td>'+fmt(r.dev)+'</td><td style="color:var(--red)">'+fmt(r.ded)+'</td><td style="font-weight:800;color:var(--green)">'+fmt(r.net)+'</td></tr>';
+    });
+    html+='</tbody><tfoot><tr><td colspan="5"><strong>TOTAL GENERAL</strong></td><td class="tot">'+fmt(totDev)+'</td><td class="tot" style="color:#f87171;">'+fmt(totDed)+'</td><td class="neto">'+fmt(totNet)+'</td></tr></tfoot></table></div>';
+    html+='<div class="norma">CST Art.161 (42h/sem·Ley 2101/2021) · Art.168 (noc.+35%) · Art.179 (dom.+75%) · Art.180 (extra +25%/+75%) · SMMLV 2026: $1.423.500</div>';
+    G('spin-mes').classList.remove('on');G('liq-mes-result').innerHTML=html;
+  },100);
+}
+
+/* ═══ INFORME GERENCIAL ═══ */
+function renderInforme(){
+  var fe=G('inf-empresa').value,femp=G('inf-emp').value,fmes=G('inf-mes').value;
+  var label=(femp?DB[femp]?DB[femp].n:'Empleado':fe||'Todas las empresas')+' · '+(MESES[fmes]||fmes);
+  var empleados=Object.keys(DB).filter(function(ced){
+    if(fe&&DB[ced].cl!==fe)return false;
+    if(femp&&ced!==femp)return false;
+    return TURNOS[ced]&&TURNOS[ced].filter(function(t){return t[0].slice(0,7)===fmes;}).length>0;
+  });
+  var resultados=empleados.map(function(ced){return calcLiq(parseInt(ced),fmes);});
+  var totNet=0,totDev=0,totDed=0,totH=0,totExt=0,totNoc=0;
+  resultados.forEach(function(r){totNet+=r.net;totDev+=r.dev;totDed+=r.ded;totH+=r.totH;totExt+=r.ext;totNoc+=r.odN;});
+  var html='<div style="margin-bottom:16px;"><div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Segmento analizado</div><div style="font-size:16px;font-weight:800;color:var(--navy)">'+label+'</div></div>';
+  html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;">'+
+    '<div class="stat-card"><div class="stat-label">Total neto mes</div><div class="stat-val" style="color:var(--green);font-size:20px">'+fmt(totNet)+'</div></div>'+
+    '<div class="stat-card"><div class="stat-label">Devengado bruto</div><div class="stat-val" style="color:var(--navy);font-size:20px">'+fmt(totDev)+'</div></div>'+
+    '<div class="stat-card"><div class="stat-label">Deducciones</div><div class="stat-val" style="color:var(--red);font-size:20px">'+fmt(totDed)+'</div></div>'+
+    '<div class="stat-card"><div class="stat-label">Horas totales</div><div class="stat-val" style="color:var(--navy)">'+fh(totH)+'</div></div>'+
+    '<div class="stat-card"><div class="stat-label">Horas extras</div><div class="stat-val" style="color:var(--warn)">'+fh(totExt)+'</div></div>'+
+    '<div class="stat-card"><div class="stat-label">Horas nocturnas</div><div class="stat-val" style="color:#7c3aed">'+fh(totNoc)+'</div></div>'+
+  '</div>';
+  if(resultados.length===0){html+='<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">No hay datos para los filtros seleccionados.</div>';G('informe-content').innerHTML=html;return;}
+  html+='<div class="tw"><table><thead><tr><th>Empleado</th><th>Cargo</th><th>Empresa</th><th>H. Ord.</th><th>H. Noc.</th><th>H. Extra</th><th>H. Total</th><th>Devengado</th><th>Deducciones</th><th style="color:var(--green)">Neto</th></tr></thead><tbody>';
+  resultados.sort(function(a,b){return b.net-a.net;}).forEach(function(r){
+    html+='<tr><td style="font-weight:700">'+r.e.n+'</td><td>'+r.e.c+'</td><td>'+r.e.cl+'</td>'+
+    '<td>'+fh(r.ord)+'</td><td style="color:#7c3aed">'+fh(r.odN)+'</td><td style="color:var(--warn)">'+fh(r.ext)+'</td><td style="font-weight:700">'+fh(r.totH)+'</td>'+
+    '<td>'+fmt(r.dev)+'</td><td style="color:var(--red)">'+fmt(r.ded)+'</td><td style="font-weight:800;color:var(--green)">'+fmt(r.net)+'</td></tr>';
+  });
+  html+='</tbody><tfoot><tr><td colspan="7"><strong>TOTAL</strong></td><td class="tot">'+fmt(totDev)+'</td><td class="tot" style="color:#f87171">'+fmt(totDed)+'</td><td class="neto">'+fmt(totNet)+'</td></tr></tfoot></table></div>';
+  html+='<div class="norma" style="margin-top:12px;">CST Art.161 (42h/sem·Ley 2101/2021) · Art.168 (noc.+35%) · Art.179 (dom.+75%) · Art.180 (extra +25%/+75%) · SMMLV 2026: $1.423.500</div>';
+  G('informe-content').innerHTML=html;
+}
+
+/* ═══ EXPORTACIONES PDF ═══ */
+function exportPDFLiq(){
+  if(!UL_EMP){alert('Primero calcula la liquidación del empleado.');return;}
+  var r=UL_EMP,J=window.jspdf.jsPDF,doc=new J({orientation:'portrait',unit:'mm',format:'a4'});
+  doc.setFillColor(16,48,74);doc.rect(0,0,210,30,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont('helvetica','bold');
+  doc.text('SmartFlow — Liquidación Individual',14,12);
+  doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Omnitempus S.A.S · Período: '+MESES[G('sel-mes-liq').value]+' · SMMLV 2026: $1.423.500',14,19);
+  doc.setTextColor(16,48,74);doc.setFontSize(12);doc.setFont('helvetica','bold');doc.text(r.e.n,14,38);
+  doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(100,116,139);
+  doc.text(r.e.c+' · '+r.e.lu+' · '+r.e.cl+' · Cédula: '+r.ced,14,44);
+  doc.text('Sal. base: '+fmt(r.e.sal)+' · Valor hora: '+fmt(r.vh)+' · Turnos: '+r.nt,14,50);
+  doc.setTextColor(16,48,74);doc.setFontSize(10);doc.setFont('helvetica','bold');doc.text('Clasificación de horas',14,58);
+  doc.autoTable({startY:61,head:[['Tipo','Horas','Factor','Valor/h','Subtotal']],
+    body:[['Ordinaria diurna',fh(r.odD),'1.00',fmt(r.vh),fmt(r.vOD)],['Nocturna (+35%)',fh(r.odN),'1.35',fmt(r.vh*1.35),fmt(r.vON)],['Dom/fest diurna (+75%)',fh(r.ddD),'1.75',fmt(r.vh*1.75),fmt(r.vDD)],['Dom/fest nocturna',fh(r.ddN),'2.10',fmt(r.vh*2.10),fmt(r.vDN)],['Extra diurna (+25%)',fh(r.edD),'1.25',fmt(r.vh*1.25),fmt(r.vED)],['Extra nocturna (+75%)',fh(r.edN),'1.75',fmt(r.vh*1.75),fmt(r.vEN)],['Extra dom. diurna',fh(r.edDd),'2.05',fmt(r.vh*2.05),fmt(r.vEDd)],['Extra dom. nocturna',fh(r.edNd),'2.55',fmt(r.vh*2.55),fmt(r.vENd)]],
+    headStyles:{fillColor:[16,48,74],fontSize:7},bodyStyles:{fontSize:7},alternateRowStyles:{fillColor:[248,250,252]},margin:{left:14,right:14}});
+  var y=doc.lastAutoTable.finalY+4;
+  doc.autoTable({startY:y,head:[['Concepto','Tipo','Valor']],
+    body:[['Salario base','Devengo',fmt(r.e.sal)],['Recargos/extras','Devengo','+'+fmt(r.tE)],['Total devengado','',fmt(r.dev)],['Salud empleado (4%)','Deducción','-'+fmt(r.sal)],['Pensión empleado (4%)','Deducción','-'+fmt(r.pen)],['NETO A PAGAR','',fmt(r.net)]],
+    headStyles:{fillColor:[16,48,74],fontSize:7},bodyStyles:{fontSize:7},
+    didParseCell:function(d){if(d.row.index===5){d.cell.styles.fontStyle='bold';d.cell.styles.fillColor=[16,48,74];d.cell.styles.textColor=[151,201,62];}},
+    alternateRowStyles:{fillColor:[248,250,252]},margin:{left:14,right:14}});
+  doc.save('Liquidacion_'+r.e.n.replace(/ /g,'_')+'_'+G('sel-mes-liq').value+'.pdf');
+}
+
+function exportPDFMes(){
+  if(!UL_MES){calcularMes();setTimeout(exportPDFMes,1500);return;}
+  var d=UL_MES,J=window.jspdf.jsPDF,doc=new J({orientation:'landscape',unit:'mm',format:'a4'});
+  var totNet=0,totDev=0,totDed=0;d.resultados.forEach(function(r){totNet+=r.net;totDev+=r.dev;totDed+=r.ded;});
+  doc.setFillColor(16,48,74);doc.rect(0,0,297,28,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont('helvetica','bold');
+  doc.text('SmartFlow — Liquidación Total Nómina',14,12);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.text('Omnitempus S.A.S · '+MESES[d.mes]+(d.empresa?' · '+d.empresa:'')+' · '+d.resultados.length+' empleados',14,19);
+  doc.setTextColor(151,201,62);doc.setFontSize(10);doc.setFont('helvetica','bold');
+  doc.text('TOTAL A PAGAR: '+fmt(totNet),297-14,19,{align:'right'});
+  doc.autoTable({startY:32,head:[['Empleado','Cédula','Cargo','Empresa','H. Ord.','H. Extra','Devengado','Deducciones','NETO A PAGAR']],
+    body:d.resultados.map(function(r){return[r.e.n,String(r.ced),r.e.c,r.e.cl,fh(r.ord),fh(r.ext),fmt(r.dev),fmt(r.ded),fmt(r.net)];}),
+    foot:[['TOTALES','','','','','',fmt(totDev),fmt(totDed),fmt(totNet)]],
+    headStyles:{fillColor:[16,48,74],fontSize:7,fontStyle:'bold'},bodyStyles:{fontSize:7},
+    footStyles:{fillColor:[16,48,74],textColor:[151,201,62],fontStyle:'bold',fontSize:8},
+    alternateRowStyles:{fillColor:[248,250,252]},margin:{left:14,right:14}});
+  doc.save('Liquidacion_Total_'+d.mes+(d.empresa?'_'+d.empresa.replace(/ /g,'_'):'')+'.pdf');
+}
+
+function exportPDFGerencial(){
+  var fe=G('inf-empresa').value,femp=G('inf-emp').value,fmes=G('inf-mes').value;
+  var empleados=Object.keys(DB).filter(function(ced){
+    if(fe&&DB[ced].cl!==fe)return false;if(femp&&ced!==femp)return false;
+    return TURNOS[ced]&&TURNOS[ced].filter(function(t){return t[0].slice(0,7)===fmes;}).length>0;
+  });
+  var resultados=empleados.map(function(ced){return calcLiq(parseInt(ced),fmes);});
+  var totNet=0,totDev=0,totDed=0,totH=0,totExt=0;
+  resultados.forEach(function(r){totNet+=r.net;totDev+=r.dev;totDed+=r.ded;totH+=r.totH;totExt+=r.ext;});
+  var J=window.jspdf.jsPDF,doc=new J({orientation:'landscape',unit:'mm',format:'a4'});
+  doc.setFillColor(16,48,74);doc.rect(0,0,297,30,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont('helvetica','bold');
+  doc.text('SmartFlow — Informe Gerencial',14,13);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  var seg=(femp&&DB[femp]?DB[femp].n:fe||'Todos los empleados')+' · '+(MESES[fmes]||fmes);
+  doc.text('Omnitempus S.A.S · Segmento: '+seg,14,21);
+  doc.setTextColor(151,201,62);doc.text('Total neto: '+fmt(totNet)+' · Devengado: '+fmt(totDev)+' · Horas: '+fh(totH),297-14,21,{align:'right'});
+  doc.autoTable({startY:34,head:[['Empleado','Cargo','Empresa','H. Ord.','H. Noc.','H. Extra','H. Total','Devengado','Deducciones','NETO']],
+    body:resultados.sort(function(a,b){return b.net-a.net;}).map(function(r){return[r.e.n,r.e.c,r.e.cl,fh(r.ord),fh(r.odN),fh(r.ext),fh(r.totH),fmt(r.dev),fmt(r.ded),fmt(r.net)];}),
+    foot:[['TOTALES','','','','','',fh(totH),fmt(totDev),fmt(totDed),fmt(totNet)]],
+    headStyles:{fillColor:[16,48,74],fontSize:6.5,fontStyle:'bold'},bodyStyles:{fontSize:6.5},
+    footStyles:{fillColor:[16,48,74],textColor:[151,201,62],fontStyle:'bold',fontSize:7},
+    alternateRowStyles:{fillColor:[248,250,252]},margin:{left:14,right:14}});
+  doc.save('InformeGerencial_'+fmes+(fe?'_'+fe.replace(/ /g,'_'):'')+'.pdf');
+}
+
+function exportCSV(){
+  var fil=HN.concat(HIST_BASE);
+  var rows=[['Empleado','Cédula','Cargo','Empresa','Puesto','Fecha','Entrada','Salida','Horas','Tipo','Observación']];
+  fil.forEach(function(r){rows.push([r.n,r.id,DB[r.id]?DB[r.id].c:'',r.cl,r.p,r.f,r.ei,r.sf,r.h.toFixed(1),r.tipo,r.obs||'']);});
+  var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download='Turnos_Omnitempus_'+hoy()+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+function exportPDFHist(){
+  var fil=HN.concat(HIST_BASE);
+  var J=window.jspdf.jsPDF,doc=new J({orientation:'landscape',unit:'mm',format:'a4'});
+  doc.setFillColor(16,48,74);doc.rect(0,0,297,22,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(12);doc.setFont('helvetica','bold');
+  doc.text('SmartFlow OT — Histórico de Turnos · Omnitempus S.A.S',14,13);
+  doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('Generado: '+new Date().toLocaleDateString('es-CO'),297-14,13,{align:'right'});
+  doc.autoTable({startY:26,head:[['Empleado','Empresa','Puesto','Fecha','Entrada','Salida','Horas','Tipo']],
+    body:fil.map(function(r){return[r.n,r.cl,r.p,r.f,r.ei,r.sf,fh(r.h),r.tipo];}),
+    headStyles:{fillColor:[16,48,74],fontSize:8,fontStyle:'bold'},bodyStyles:{fontSize:8},
+    alternateRowStyles:{fillColor:[248,250,252]},margin:{left:14,right:14}});
+  doc.save('Historico_Turnos_Omnitempus_'+hoy()+'.pdf');
+}
+
+/* ═══ INIT ═══ */
+document.addEventListener('DOMContentLoaded',function(){
+  G('fecha-ent').value=hoy();
+  setBtn('btn-ent',false);setBtn('btn-sal',false);
+  poblarFiltros();
+  renderEmps();
+  renderHist();
+  renderInforme();
+  calcularTotalMes();
+});
 </script>
 </body>
 </html>
