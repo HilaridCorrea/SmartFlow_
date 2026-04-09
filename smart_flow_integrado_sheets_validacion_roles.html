@@ -1,0 +1,139 @@
+<!-- Versión simplificada con integración clave -->
+<script>
+// ================= CONFIG =================
+const API_URL = "TU_APPS_SCRIPT_URL";
+
+const SUPERVISORES = [
+  {user: "admin", pass: "1234", nombre: "Carlos"},
+  {user: "supervisor", pass: "5678", nombre: "Ana"}
+];
+
+// ================= LOGIN =================
+function loginSupervisor(user, pass){
+  const sup = SUPERVISORES.find(s => s.user === user && s.pass === pass);
+  if(sup){
+    localStorage.setItem("rol","supervisor");
+    localStorage.setItem("supervisor_nombre", sup.nombre);
+    aplicarPermisos();
+    alert("Ingreso como supervisor");
+  } else alert("Credenciales inválidas");
+}
+
+// ================= PERMISOS =================
+function aplicarPermisos(){
+  const rol = localStorage.getItem("rol");
+  if(rol !== "supervisor"){
+    document.querySelectorAll(".btn-aprobar").forEach(b=>b.style.display="none");
+    document.querySelectorAll(".btn-rechazar").forEach(b=>b.style.display="none");
+  }
+}
+
+// ================= CRUD =================
+async function guardarTurno(turno){
+  await fetch(API_URL,{
+    method:"POST",
+    body: JSON.stringify({action:"crear",...turno})
+  });
+  cargarTurnos();
+}
+
+async function validarTurno(id){
+  const supervisor = localStorage.getItem("supervisor_nombre");
+  await fetch(API_URL,{
+    method:"POST",
+    body: JSON.stringify({
+      action:"validar",
+      id:id,
+      estado:"validado",
+      supervisor:supervisor,
+      fecha_validacion:new Date().toISOString()
+    })
+  });
+  cargarTurnos();
+}
+
+async function rechazarTurno(id){
+  const motivo = prompt("Motivo de rechazo:");
+  await fetch(API_URL,{
+    method:"POST",
+    body: JSON.stringify({
+      action:"rechazar",
+      id:id,
+      estado:"rechazado",
+      motivo:motivo
+    })
+  });
+  cargarTurnos();
+}
+
+// ================= DATA =================
+async function obtenerTurnos(){
+  const res = await fetch(API_URL);
+  return await res.json();
+}
+
+function parseFecha(f){ return new Date(f); }
+
+function getMesActual(){ return new Date().getMonth(); }
+
+// ================= RENDER =================
+async function cargarTurnos(){
+  const data = await obtenerTurnos();
+  const mes = getMesActual();
+
+  const turnosMes = data.filter(t=>{
+    const fecha = parseFecha(t.fecha);
+    return fecha.getMonth()===mes;
+  });
+
+  renderNovedades(turnosMes);
+  renderValidacion(turnosMes);
+}
+
+function renderValidacion(turnos){
+  const cont = document.getElementById("val-container");
+  cont.innerHTML="";
+
+  turnos.filter(t=>t.estado==="pendiente").forEach(t=>{
+    cont.innerHTML += `
+    <div class="val-card pendiente">
+      <div>${t.empleado} - ${t.fecha}</div>
+      <button class="btn-aprobar" onclick="validarTurno('${t.id}')">Aprobar</button>
+      <button class="btn-rechazar" onclick="rechazarTurno('${t.id}')">Rechazar</button>
+    </div>`;
+  });
+
+  aplicarPermisos();
+}
+
+function renderNovedades(turnos){
+  const cont = document.getElementById("alertas");
+  cont.innerHTML="";
+
+  turnos.forEach(t=>{
+    if(t.estado==="rechazado"){
+      cont.innerHTML += `<div class='alert-item'>❌ Rechazado: ${t.empleado}</div>`;
+    }
+    if(t.estado==="pendiente"){
+      cont.innerHTML += `<div class='alert-item'>⏳ Pendiente: ${t.empleado}</div>`;
+    }
+  });
+}
+
+// ================= FECHA DINAMICA =================
+function setMesActual(){
+  const meses=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+  const hoy=new Date();
+  document.getElementById("pg-sub").innerText = `${meses[hoy.getMonth()]} ${hoy.getFullYear()} · Omnitempus S.A.S`;
+}
+
+// INIT
+window.onload = ()=>{
+  setMesActual();
+  cargarTurnos();
+};
+</script>
+
+<!-- CONTENEDORES NECESARIOS -->
+<div id="val-container"></div>
+<div id="alertas"></div>
